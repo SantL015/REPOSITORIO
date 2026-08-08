@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIENVENIDO</title>
+    <title>ECO - Moda Sostenible</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,34 +11,75 @@
             padding: 0;
         }
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            background-color: #90EE90;
-            background-image: 
-                linear-gradient(90deg, rgba(139, 90, 43, 0.3) 0%, rgba(139, 90, 43, 0.3) 20px, transparent 20px, transparent 40px),
-                linear-gradient(0deg, rgba(139, 90, 43, 0.2) 0%, rgba(139, 90, 43, 0.2) 2px, transparent 2px, transparent 20px);
-            background-size: 40px 20px, 100% 20px;
+            background-color: #228B22;
             display: flex;
             flex-direction: column;
+            color: #333;
+        }
+        nav {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-family: 'Georgia', serif;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: #90EE90;
         }
         header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
+        }
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
         }
         .header-title {
             font-family: 'Georgia', serif;
-            font-size: 4rem;
+            font-size: 5rem;
             font-weight: bold;
-            color: #2E8B57;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px 60px;
-            border: 8px solid;
-            border-image: linear-gradient(135deg, #8B4513, #A0522D, #8B4513) 1;
-            box-shadow: 
-                inset 0 0 20px rgba(139, 69, 19, 0.3),
-                0 4px 8px rgba(0, 0, 0, 0.2);
-            display: inline-block;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            margin-bottom: 15px;
+        }
+        .slogan {
+            font-size: 1.8rem;
+            color: #90EE90;
+            font-style: italic;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin-top: 20px;
         }
         main {
             flex: 1;
@@ -47,97 +88,166 @@
             margin: 0 auto;
             width: 100%;
         }
+        .about-section {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .about-text h2 {
+            color: #228B22;
+            font-family: 'Georgia', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+        .about-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .feature {
+            background-color: #f0f8f0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #228B22;
+        }
+        .feature h4 {
+            color: #228B22;
+            margin-bottom: 8px;
+        }
         .section-title {
             font-family: 'Georgia', serif;
-            font-size: 2rem;
-            color: #2E8B57;
+            font-size: 2.5rem;
+            color: white;
             text-align: center;
-            margin: 30px 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            margin: 40px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .products-section {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 30px;
-            border: 6px solid;
-            border-image: linear-gradient(135deg, #8B4513, #A0522D, #8B4513) 1;
-            box-shadow: 
-                inset 0 0 20px rgba(139, 69, 19, 0.3),
-                0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
             margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .products-section h2 {
+            color: #228B22;
+            text-shadow: none;
+            margin-top: 0;
         }
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
         }
         .product-card {
             background-color: white;
-            border: 3px solid #8B4513;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
+            border: none;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.4s ease;
         }
         .product-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
         }
         .product-image {
             width: 100%;
-            height: 200px;
+            height: 280px;
             background-color: #f0f0f0;
-            border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #8B4513;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            object-fit: cover;
+            margin-bottom: 0;
+            overflow: hidden;
         }
         .product-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 5px;
+            transition: transform 0.4s ease;
+        }
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        .product-info {
+            padding: 20px;
         }
         .product-name {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: #2E8B57;
+            color: #228B22;
             text-align: center;
+            margin-bottom: 10px;
+        }
+        .product-description {
+            color: #666;
+            text-align: center;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .product-price {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8B4513;
         }
         .contact-section {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 30px;
-            border: 6px solid;
-            border-image: linear-gradient(135deg, #8B4513, #A0522D, #8B4513) 1;
-            box-shadow: 
-                inset 0 0 20px rgba(139, 69, 19, 0.3),
-                0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
             margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .contact-section h2 {
+            color: #228B22;
+            text-shadow: none;
+            margin-top: 0;
         }
         .contact-info {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
         .contact-item {
             text-align: center;
-            padding: 20px;
+            padding: 25px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .contact-item:hover {
+            transform: translateY(-5px);
         }
         .contact-item h3 {
-            color: #8B4513;
-            margin-bottom: 10px;
+            color: #228B22;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
         }
         .contact-item p {
-            color: #333;
+            color: #555;
             font-size: 1.1rem;
+            line-height: 1.6;
         }
         footer {
-            background-color: rgba(139, 69, 19, 0.9);
+            background-color: rgba(0, 0, 0, 0.3);
             color: white;
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
         }
         .footer-content {
@@ -145,52 +255,142 @@
             margin: 0 auto;
         }
         .footer-content p {
-            margin: 8px 0;
+            margin: 10px 0;
+            font-size: 1.1rem;
         }
         .footer-credits {
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 25px;
+            padding-top: 25px;
             border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 15px;
+            }
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            .header-title {
+                font-size: 3.5rem;
+            }
+            .slogan {
+                font-size: 1.4rem;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-title">ECO</div>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">ECO</a>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="inicio">
+        <div class="header-content">
+            <div class="header-title">ECO</div>
+            <p class="slogan">"Viste con conciencia, viste con estilo.</p>
+            <p class="tagline">Moda sostenible para un planeta mejor</p>
+        </div>
     </header>
+
     <main>
-        <section class="products-section">
+        <section class="about-section" id="nosotros">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Nuestra Historia</h2>
+                    <p>En ECO, creemos que la moda puede ser hermosa y responsable. Cada una de nuestras prendas está fabricada con materiales 100% ecológicos y procesos sostenibles que respetan tanto a las personas y al planeta. Desde el algodón orgánico hasta los tintes naturales, cada detalle está cuidadosamente diseñado para reducir nuestro impacto ambiental. Únete a la revolución de la moda consciente.</p>
+                </div>
+                <div class="about-features">
+                    <div class="feature">
+                    <h4>🌱 Materiales Orgánicos</h4>
+                    <p>100% algodón orgánico certificado</p>
+                    </div>
+                    <div class="feature">
+                    <h4>♻️ Producción Sostenible</h4>
+                    <p>Procesos eco-amigables</p>
+                    </div>
+                    <div class="feature">
+                    <h4>🤝 Comercio Justo</h4>
+                    <p>Condiciones laborales éticas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="products-section" id="productos">
             <h2 class="section-title">Nuestros Productos</h2>
             <div class="products-grid">
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="producto1.jpg" alt="Producto 1">
+                        <img src="./Rebeld-Enjoylife-Camiseta-Essential-Blanca-F-500x500.png" alt="Camiseta Essential Blanca">
                     </div>
-                    <div class="product-name"><img src="./Rebeld-Enjoylife-Camiseta-Essential-Blanca-F-500x500.png" alt=""></div>
+                    <div class="product-info">
+                        <div class="product-name">Camiseta Essential Blanca</div>
+                        <div class="product-description">Hecha con algodón orgánico 100%, suave y cómoda para cualquier ocasión.</div>
+                        <div class="product-price">$49.900</div>
+                    </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-image"><img src="./images (2).jpg" alt=""></div>
-                    <div class="product-name">Producto 2</div>
+                    <div class="product-image">
+                        <img src="./images (2).jpg" alt="Camiseta Ecológica">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Camiseta Ecológica</div>
+                        <div class="product-description">Diseño versátil, fabricada con materiales reciclados de alta calidad.</div>
+                        <div class="product-price">$54.900</div>
+                    </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-image"><img src="./camisa-rayas-manga-corta-ecologica-350x464.jpg" alt="Producto"></div>
-                    <div class="product-name">Producto 3></div>
+                    <div class="product-image">
+                        <img src="./camisa-rayas-manga-corta-ecologica-350x464.jpg" alt="Camisa Rayas Manga Corta">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Camisa Rayas Manga Corta</div>
+                        <div class="product-description">Estilo clásico con un toque ecológico, perfecta para looks casuales.</div>
+                        <div class="product-price">$79.900</div>
+                    </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-image"><img src="./adis-gris-19053-742485_019053-1_703c77d9-da0b-4aec-b78a-a613020cff3a.webp" alt=""></div>
-                    <div class="product-name">Producto 4</div>
+                    <div class="product-image">
+                        <img src="./adis-gris-19053-742485_019053-1_703c77d9-da0b-4aec-b78a-a613020cff3a.webp" alt="Sudadera Gris Orgánica">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Sudadera Gris Orgánica</div>
+                        <div class="product-description">Calidez y estilo sostenibilidad en una sola prenda, ideal para días frescos.</div>
+                        <div class="product-price">$89.900</div>
+                    </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-image"><img src="./camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp" alt=""></div>
-                    <div class="product-name">Producto 5</div>
+                    <div class="product-image">
+                        <img src="./camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp" alt="Camiseta Manga Larga Mujer">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Camiseta Manga Larga Mujer</div>
+                        <div class="product-description">Elegancia y comodidad en algodón orgánico para todas las estaciones.</div>
+                        <div class="product-price">$64.900</div>
+                    </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-image"><img src="./Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif" alt=""></div>
-                    <div class="product-name">Producto 6</div>
+                    <div class="product-image">
+                        <img src="./Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif" alt="Camisa Lino Manga Larga">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">Camisa Lino Manga Larga</div>
+                        <div class="product-description">Lino orgánico premium, transpirable y perfecta para cualquier evento.</div>
+                        <div class="product-price">$99.900</div>
+                    </div>
                 </div>
             </div>
         </section>
-        <section class="contact-section">
+
+        <section class="contact-section" id="contacto">
             <h2 class="section-title">Contáctanos</h2>
             <div class="contact-info">
                 <div class="contact-item">
@@ -212,15 +412,17 @@
             </div>
         </section>
     </main>
+
     <footer>
         <div class="footer-content">
             <p>© 2024 ECO - Todos los derechos reservados</p>
             <div class="footer-credits">
                 <p>Desarrollado con ❤️ por el equipo de ECO</p>
-                <p>Diseño web moderno y responsivo</p>
+                <p>Moda sostenible para un futuro mejor</p>
                 <p>Calidad y bienestar</p>
             </div>
         </div>
     </footer>
+    <script src="calculos.js"></script>
 </body>
 </html>
