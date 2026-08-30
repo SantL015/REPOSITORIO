@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#e63946">
+    <meta name="description" content="Mis Pedidos ANTHROS — Revisa el historial y detalles de todas tus compras.">
+    <title>Mis Pedidos | ANTHROS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="./index.html" class="nav-logo animate-fade" onclick="event.preventDefault();navigateTo('home');">ANTHROS</a>
+            <ul class="nav-links">
+                <li><a href="./index.html" class="animate-fade-up delay-1" onclick="event.preventDefault();navigateTo('home');">Inicio</a></li>
+                <li><a href="./index.html#nosotros" class="animate-fade-up delay-2" onclick="event.preventDefault();navigateTo('home','nosotros');">Nosotros</a></li>
+                <li><a href="./catalogo.html" class="animate-fade-up delay-3" onclick="event.preventDefault();navigateTo('catalogo');">Colección</a></li>
+                <li><a href="./favoritos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
+                <li><a href="./pedidos.html" class="animate-fade-up delay-4 active" onclick="event.preventDefault();navigateTo('orders');">Pedidos</a></li>
+                <li><a href="./index.html#contacto" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle animate-fade" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema">☀️</button>
+                <button class="favorites-btn animate-fade-up delay-4" onclick="navigateTo('favorites')" aria-label="Ver favoritos" title="Mis favoritos">♥ <span class="favorites-count" id="favoritesCount" style="display:none;">0</span></button>
+                <button class="cart-btn animate-fade-up delay-5" onclick="toggleCart()" aria-label="Abrir carrito">🛒 <span class="cart-btn-label">Carrito</span> <span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger animate-fade" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu" onclick="closeMenuOutside(event)">
+        <div class="mobile-menu-panel" onclick="event.stopPropagation()">
+            <div class="mobile-menu-title">MENÚ ANTHROS</div>
+            <ul class="mobile-nav-links">
+                <li><a href="./index.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('home');">🏠 Inicio</a></li>
+                <li><a href="./index.html#nosotros" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','nosotros');">👥 Nosotros</a></li>
+                <li><a href="./catalogo.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Colección</a></li>
+                <li><a href="./favoritos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('favorites');">♥ Mis Favoritos</a></li>
+                <li><a href="./pedidos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('orders');">📦 Mis Pedidos</a></li>
+                <li><a href="./index.html#contacto" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','contacto');">📞 Contacto</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showFAQModal();">❓ Preguntas Frecuentes</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showSizeGuideModal();">📏 Guía de Tallas</a></li>
+            </ul>
+            <div class="mobile-menu-divider"></div>
+            <a href="./catalogo.html" class="mobile-cta" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Explorar Productos</a>
+        </div>
+    </div>
+
+    <header style="padding: var(--space-7) 0 var(--space-4); background: linear-gradient(135deg, var(--cream-light), var(--cream)); margin-bottom: var(--space-5);">
+        <div style="width: var(--container); margin-inline: auto; padding: 0 var(--container-pad);">
+            <nav aria-label="Breadcrumb" style="margin-bottom: var(--space-3); font-size: var(--fs-xs); color: var(--text-muted);">
+                <a href="./index.html" style="color: inherit; text-decoration: none;" onclick="event.preventDefault();navigateTo('home');">Inicio</a>
+                <span style="margin: 0 6px;">/</span>
+                <span style="color: var(--red-primary); font-weight: 600;">Mis Pedidos</span>
+            </nav>
+            <h1 style="font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: var(--red-deep); margin-bottom: var(--space-2);">📦 Historial de Pedidos</h1>
+            <p style="font-size: var(--fs-md); color: var(--text-muted); max-width: 640px;">Revisa el estado, los detalles y el resumen de todas tus compras Anthros. ¡Haz clic en cualquier pedido para ver más información!</p>
+        </div>
+    </header>
+
+    <main style="padding-top: 0;">
+        <section class="section" style="padding-top: 0;">
+            <div id="pedidosContent">
+                <!-- El renderOrdersFullPage busca ordersContent y si no existe reasigna este id a pedidosContent -->
+            </div>
+        </section>
+    </main>
+
+    <section class="newsletter reveal" style="margin-top: var(--space-7);">
+        <h2>✨ ¿Quieres hacer un nuevo pedido?</h2>
+        <p>Explora la colección 2024 y descubre nuestras nuevas prendas premium.</p>
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="Tu correo electrónico" required>
+            <button type="submit" class="newsletter-btn">Suscribirme</button>
+        </form>
+        <div style="margin-top: var(--space-4);">
+            <a href="./catalogo.html" class="btn-primary" style="display: inline-block; text-decoration: none;" onclick="event.preventDefault();navigateTo('catalogo');">🛍️ Ir al Catálogo</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">ANTHROS</div>
+            <p class="footer-tagline">"Viste tu autenticidad. Vive tu esencia."</p>
+            <div class="footer-grid">
+                <div class="footer-col"><h4>Sobre Nosotros</h4><p>Marca colombiana de moda premium. Diseño atemporal, calidad excepcional y producción consciente.</p></div>
+                <div class="footer-col"><h4>Colección</h4><ul>
+                    <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Ver Catálogo</a></li>
+                    <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Hombres</a></li>
+                    <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Mujeres</a></li>
+                    <li><a href="./favoritos.html" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
+                </ul></div>
+                <div class="footer-col"><h4>Ayuda</h4><ul>
+                    <li><a href="./index.html#contacto" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
+                    <li><a href="#" onclick="event.preventDefault();showFAQModal();">FAQ</a></li>
+                    <li><a href="#" onclick="event.preventDefault();showSizeGuideModal();">Guía de Tallas</a></li>
+                    <li><a href="./carrito.html" onclick="event.preventDefault();navigateTo('carrito');">Mi Carrito</a></li>
+                </ul></div>
+                <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Términos</a></li><li><a href="#">Privacidad</a></li><li><a href="#">Cambios</a></li><li><a href="#">Garantía</a></li></ul></div>
+            </div>
+            <div class="footer-social">
+                <a href="#" class="social-icon" title="Instagram">📷</a>
+                <a href="#" class="social-icon" title="Facebook">📘</a>
+                <a href="#" class="social-icon" title="TikTok">🎵</a>
+                <a href="#" class="social-icon" title="WhatsApp">💬</a>
+            </div>
+            <div class="footer-bottom"><p>© 2024 ANTHROS — Todos los derechos reservados</p><p>Hecho con 🔥 pasión por la moda colombiana · Barranquilla</p></div>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Volver arriba">↑</button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="cart-modal" id="cartModal" onclick="closeCartOutside(event)" role="dialog" aria-modal="true">
+        <div class="cart-panel" onclick="event.stopPropagation()">
+            <div class="cart-header"><h3>🛍️ Tu Carrito</h3><button class="cart-close" onclick="toggleCart()" aria-label="Cerrar">×</button></div>
+            <div class="promo-section"><div class="promo-input-wrapper"><input type="text" class="promo-input" id="promoInput" placeholder="Código (ej: BIENVENIDO)"><button class="promo-btn" onclick="applyPromo()">Aplicar</button></div><div class="promo-message" id="promoMessage"></div></div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-summary" id="cartSummary">
+                <div class="cart-empty" id="cartEmpty"><div class="cart-empty-icon">🛒</div><p>Tu carrito está vacío</p><p>¡Añade prendas para comenzar!</p></div>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" style="display:none;" onclick="checkout()">Finalizar Compra</button>
+            <div style="padding: 8px 18px 18px;">
+                <a href="./carrito.html" class="qv-btn-secondary" style="display:block;text-align:center;text-decoration:none;margin-top:8px;" onclick="event.preventDefault();toggleCart();navigateTo('carrito');">🔍 Ver Carrito Completo →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="./calculos.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>

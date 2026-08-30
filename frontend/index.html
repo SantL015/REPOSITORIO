@@ -1,428 +1,299 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECO - Moda Sostenible</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            background-color: #228B22;
-            display: flex;
-            flex-direction: column;
-            color: #333;
-        }
-        nav {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            font-family: 'Georgia', serif;
-        }
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover {
-            color: #90EE90;
-        }
-        header {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        .header-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .header-title {
-            font-family: 'Georgia', serif;
-            font-size: 5rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-            margin-bottom: 15px;
-        }
-        .slogan {
-            font-size: 1.8rem;
-            color: #90EE90;
-            font-style: italic;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .tagline {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.2rem;
-            margin-top: 20px;
-        }
-        main {
-            flex: 1;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .about-section {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-        .about-text h2 {
-            color: #228B22;
-            font-family: 'Georgia', serif;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        .about-text p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #555;
-        }
-        .about-features {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .feature {
-            background-color: #f0f8f0;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 5px solid #228B22;
-        }
-        .feature h4 {
-            color: #228B22;
-            margin-bottom: 8px;
-        }
-        .section-title {
-            font-family: 'Georgia', serif;
-            font-size: 2.5rem;
-            color: white;
-            text-align: center;
-            margin: 40px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .products-section {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        .products-section h2 {
-            color: #228B22;
-            text-shadow: none;
-            margin-top: 0;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .product-card {
-            background-color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: all 0.4s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        }
-        .product-image {
-            width: 100%;
-            height: 280px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0;
-            overflow: hidden;
-        }
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
-        }
-        .product-info {
-            padding: 20px;
-        }
-        .product-name {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #228B22;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .product-description {
-            color: #666;
-            text-align: center;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .product-price {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #8B4513;
-        }
-        .contact-section {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        .contact-section h2 {
-            color: #228B22;
-            text-shadow: none;
-            margin-top: 0;
-        }
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        .contact-item {
-            text-align: center;
-            padding: 25px;
-            background-color: #f8f8f8;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
-        .contact-item:hover {
-            transform: translateY(-5px);
-        }
-        .contact-item h3 {
-            color: #228B22;
-            margin-bottom: 12px;
-            font-size: 1.3rem;
-        }
-        .contact-item p {
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-        footer {
-            background-color: rgba(0, 0, 0, 0.3);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-        .footer-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .footer-content p {
-            margin: 10px 0;
-            font-size: 1.1rem;
-        }
-        .footer-credits {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        @media (max-width: 768px) {
-            .nav-links {
-                gap: 15px;
-            }
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-            .header-title {
-                font-size: 3.5rem;
-            }
-            .slogan {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#e63946">
+    <meta name="description" content="ANTHROS — Moda colombiana premium. Moda que se siente, estilo que perdura. Colección 2024 para mujeres y hombres.">
+    <meta name="keywords" content="ropa, moda, colombia, barranquilla, camisetas, camisas, vestidos, sudaderas, anthros">
+    <meta property="og:title" content="ANTHROS — Moda que se siente, estilo que perdura">
+    <meta property="og:description" content="Colección 2024 de prendas premium para mujeres y hombres. Calidad, diseño y comodidad en cada detalle.">
+    <meta property="og:type" content="website">
+    <title>ANTHROS — Inicio | Moda Premium Colombiana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- NAVBAR (el onclick usa navigateTo para compatibilidad con breadcrumbs) -->
     <nav>
-        <div class="nav-container">
-            <a href="#" class="nav-logo">ECO</a>
+        <div class="nav-inner">
+            <a href="./index.html" class="nav-logo animate-fade" onclick="event.preventDefault();navigateTo('home');">ANTHROS</a>
             <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#nosotros">Nosotros</a></li>
-                <li><a href="#productos">Productos</a></li>
-                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="./index.html" class="animate-fade-up delay-1" onclick="event.preventDefault();navigateTo('home');">Inicio</a></li>
+                <li><a href="./index.html#nosotros" class="animate-fade-up delay-2" onclick="event.preventDefault();navigateTo('home','nosotros');">Nosotros</a></li>
+                <li><a href="./catalogo.html" class="animate-fade-up delay-3" onclick="event.preventDefault();navigateTo('catalogo');">Colección</a></li>
+                <li><a href="./favoritos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
+                <li><a href="./pedidos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('orders');">Pedidos</a></li>
+                <li><a href="./index.html#contacto" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
             </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle animate-fade" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema">☀️</button>
+                <button class="favorites-btn animate-fade-up delay-4" onclick="navigateTo('favorites')" aria-label="Ver favoritos" title="Mis favoritos">
+                    ♥
+                    <span class="favorites-count" id="favoritesCount" style="display:none;">0</span>
+                </button>
+                <button class="cart-btn animate-fade-up delay-5" onclick="toggleCart()" aria-label="Abrir carrito">
+                    🛒
+                    <span class="cart-btn-label">Carrito</span>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger animate-fade" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
     </nav>
 
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu" onclick="closeMenuOutside(event)">
+        <div class="mobile-menu-panel" onclick="event.stopPropagation()">
+            <div class="mobile-menu-title">MENÚ ANTHROS</div>
+            <ul class="mobile-nav-links">
+                <li><a href="./index.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('home');">🏠 Inicio</a></li>
+                <li><a href="./index.html#nosotros" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','nosotros');">👥 Nosotros</a></li>
+                <li><a href="./catalogo.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Colección</a></li>
+                <li><a href="./favoritos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('favorites');">♥ Mis Favoritos</a></li>
+                <li><a href="./pedidos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('orders');">📦 Mis Pedidos</a></li>
+                <li><a href="./index.html#contacto" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','contacto');">📞 Contacto</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showFAQModal();">❓ Preguntas Frecuentes</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showSizeGuideModal();">📏 Guía de Tallas</a></li>
+            </ul>
+            <div class="mobile-menu-divider"></div>
+            <a href="./catalogo.html" class="mobile-cta" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Explorar Productos</a>
+        </div>
+    </div>
+
+    <!-- HERO -->
     <header id="inicio">
-        <div class="header-content">
-            <div class="header-title">ECO</div>
-            <p class="slogan">"Viste con conciencia, viste con estilo.</p>
-            <p class="tagline">Moda sostenible para un planeta mejor</p>
+        <div class="hero">
+            <span class="hero-eyebrow animate-fade-up delay-1">Colección 2024</span>
+            <h1 class="hero-title animate-fade-up delay-2">ANTHROS</h1>
+            <p class="hero-slogan animate-fade-up delay-3">"Moda que se siente, estilo que perdura."</p>
+            <p class="hero-tagline animate-fade-up delay-4">Descubre nuestra colección exclusiva de prendas diseñadas para resaltar tu esencia. Calidad premium, comodidad inigualable y diseño atemporal en cada detalle.</p>
+            <div class="hero-cta animate-fade-up delay-5">
+                <a href="./catalogo.html" class="btn-primary" onclick="event.preventDefault();navigateTo('catalogo');">Ver Colección</a>
+                <a href="#nosotros" class="btn-secondary" onclick="event.preventDefault();navigateTo('home','nosotros');">Nuestra Historia</a>
+            </div>
+            <div class="hero-badges animate-fade-up delay-6">
+                <div class="hero-badge"><div class="hero-badge-icon">🚚</div><div class="hero-badge-text"><span>Envío Gratis</span>En 5+ productos</div></div>
+                <div class="hero-badge"><div class="hero-badge-icon">💎</div><div class="hero-badge-text"><span>Calidad Premium</span>Garantía de 6 meses</div></div>
+                <div class="hero-badge"><div class="hero-badge-icon">↩️</div><div class="hero-badge-text"><span>Devoluciones</span>30 días sin preguntas</div></div>
+            </div>
         </div>
     </header>
 
-    <main>
-        <section class="about-section" id="nosotros">
-            <div class="about-content">
+    <!-- COUNTDOWN BANNER -->
+    <div class="countdown-banner reveal" id="countdownBanner">
+        <h3 class="countdown-title">🔥 ¡OFERTA LIMITADA! Descuentos especiales terminan en <span id="countdownEndText">menos de 48h</span></h3>
+        <div class="countdown-timer" id="countdownTimer">
+            <div class="countdown-box"><div class="countdown-num" id="cdDays">00</div><div class="countdown-label">Días</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cdHours">00</div><div class="countdown-label">Horas</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cdMinutes">00</div><div class="countdown-label">Min</div></div>
+            <div class="countdown-box"><div class="countdown-num" id="cdSeconds">00</div><div class="countdown-label">Seg</div></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT: NOSOTROS + HOW TO BUY + PRODUCTOS DESTACADOS (solo 4) -->
+    <main id="mainContent">
+        <section class="section reveal" id="nosotros">
+            <div class="section-header">
+                <span class="section-eyebrow">Nuestra Esencia</span>
+                <h2 class="section-title">Sobre Anthros</h2>
+            </div>
+            <div class="about-grid">
                 <div class="about-text">
-                    <h2>Nuestra Historia</h2>
-                    <p>En ECO, creemos que la moda puede ser hermosa y responsable. Cada una de nuestras prendas está fabricada con materiales 100% ecológicos y procesos sostenibles que respetan tanto a las personas y al planeta. Desde el algodón orgánico hasta los tintes naturales, cada detalle está cuidadosamente diseñado para reducir nuestro impacto ambiental. Únete a la revolución de la moda consciente.</p>
+                    <h2>Ropa que cuenta <span>tu historia</span></h2>
+                    <p>En <strong>Anthros</strong>, creemos que cada prenda es una extensión de quién eres. Nacimos con la visión de crear ropa que no solo se vea bien, sino que también se sienta bien — tanto en tu piel como en tu alma.</p>
+                    <p>Cada pieza de nuestra colección es cuidadosamente diseñada, confeccionada con materiales de la más alta calidad y con un compromiso inquebrantable con la excelencia artesanal.</p>
+                    <p>De la pasión por el diseño nace cada costura, de cada costura nace una historia. <em>La tuya.</em></p>
                 </div>
                 <div class="about-features">
-                    <div class="feature">
-                    <h4>🌱 Materiales Orgánicos</h4>
-                    <p>100% algodón orgánico certificado</p>
-                    </div>
-                    <div class="feature">
-                    <h4>♻️ Producción Sostenible</h4>
-                    <p>Procesos eco-amigables</p>
-                    </div>
-                    <div class="feature">
-                    <h4>🤝 Comercio Justo</h4>
-                    <p>Condiciones laborales éticas</p>
-                    </div>
+                    <div class="feature animate-slide-left delay-1"><h4>🔥 Calidad Premium</h4><p>Materiales seleccionados con los más altos estándares de durabilidad y confort para que cada prenda dure.</p></div>
+                    <div class="feature animate-slide-left delay-2"><h4>✨ Diseño Exclusivo</h4><p>Colecciones únicas creadas por diseñadores apasionados por el detalle y la estética atemporal.</p></div>
+                    <div class="feature animate-slide-left delay-3"><h4>🌍 Producción Consciente</h4><p>Procesos responsables que respetan a las personas, las comunidades y el medio ambiente.</p></div>
+                    <div class="feature animate-slide-left delay-4"><h4>💖 Hecho para Ti</h4><p>Prendas pensadas para adaptarse a tu estilo de vida y realzar tu autenticidad en cada momento.</p></div>
                 </div>
             </div>
         </section>
 
-        <section class="products-section" id="productos">
-            <h2 class="section-title">Nuestros Productos</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./Rebeld-Enjoylife-Camiseta-Essential-Blanca-F-500x500.png" alt="Camiseta Essential Blanca">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Camiseta Essential Blanca</div>
-                        <div class="product-description">Hecha con algodón orgánico 100%, suave y cómoda para cualquier ocasión.</div>
-                        <div class="product-price">$49.900</div>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./images (2).jpg" alt="Camiseta Ecológica">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Camiseta Ecológica</div>
-                        <div class="product-description">Diseño versátil, fabricada con materiales reciclados de alta calidad.</div>
-                        <div class="product-price">$54.900</div>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./camisa-rayas-manga-corta-ecologica-350x464.jpg" alt="Camisa Rayas Manga Corta">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Camisa Rayas Manga Corta</div>
-                        <div class="product-description">Estilo clásico con un toque ecológico, perfecta para looks casuales.</div>
-                        <div class="product-price">$79.900</div>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./adis-gris-19053-742485_019053-1_703c77d9-da0b-4aec-b78a-a613020cff3a.webp" alt="Sudadera Gris Orgánica">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Sudadera Gris Orgánica</div>
-                        <div class="product-description">Calidez y estilo sostenibilidad en una sola prenda, ideal para días frescos.</div>
-                        <div class="product-price">$89.900</div>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp" alt="Camiseta Manga Larga Mujer">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Camiseta Manga Larga Mujer</div>
-                        <div class="product-description">Elegancia y comodidad en algodón orgánico para todas las estaciones.</div>
-                        <div class="product-price">$64.900</div>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="./Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif" alt="Camisa Lino Manga Larga">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">Camisa Lino Manga Larga</div>
-                        <div class="product-description">Lino orgánico premium, transpirable y perfecta para cualquier evento.</div>
-                        <div class="product-price">$99.900</div>
-                    </div>
-                </div>
+        <section class="section reveal" id="howtobuy">
+            <div class="section-header">
+                <span class="section-eyebrow">Proceso Simple</span>
+                <h2 class="section-title">¿Cómo Comprar?</h2>
+                <p class="section-subtitle">Obtén tus prendas Anthros en 4 pasos sencillos y seguros.</p>
+            </div>
+            <div class="how-to-grid">
+                <div class="how-to-step"><div class="how-to-step-num">1</div><div class="how-to-step-icon">🛍️</div><h4>Explora y Elige</h4><p>Navega nuestra colección, selecciona tus prendas favoritas y elige la talla correcta.</p></div>
+                <div class="how-to-step"><div class="how-to-step-num">2</div><div class="how-to-step-icon">🛒</div><h4>Agrega al Carrito</h4><p>Añade productos a tu carrito y aprovecha descuentos por volumen o códigos promocionales.</p></div>
+                <div class="how-to-step"><div class="how-to-step-num">3</div><div class="how-to-step-icon">💳</div><h4>Pago Seguro</h4><p>Finaliza tu compra con cualquiera de nuestros métodos de pago protegidos y confiables.</p></div>
+                <div class="how-to-step"><div class="how-to-step-num">4</div><div class="how-to-step-icon">📦</div><h4>Recibe en Casa</h4><p>Te enviamos tu pedido a la puerta de tu casa con envío gratis en compras mayores.</p></div>
             </div>
         </section>
 
-        <section class="contact-section" id="contacto">
-            <h2 class="section-title">Contáctanos</h2>
-            <div class="contact-info">
-                <div class="contact-item">
-                    <h3>📍 Dirección</h3>
-                    <p>Calle Principal 123<br>Barranquilla, Colombia</p>
-                </div>
-                <div class="contact-item">
-                    <h3>📞 Teléfono</h3>
-                    <p>+57 (555) 123-4567</p>
-                </div>
-                <div class="contact-item">
-                    <h3>✉️ Email</h3>
-                    <p>contacto@eco.com</p>
-                </div>
-                <div class="contact-item">
-                    <h3>🕐 Horario</h3>
-                    <p>Lun-Vie: 8:00 - 19:00<br>Sáb: 10:00 - 15:00</p>
-                </div>
+        <section class="section reveal" id="productos">
+            <div class="section-header">
+                <span class="section-eyebrow">Nuestra Colección</span>
+                <h2 class="section-title">Productos Destacados</h2>
+                <p class="section-subtitle">Nuestras prendas más buscadas. Haz clic en "Ver Colección Completa" para explorarlas todas.</p>
+            </div>
+            <!-- Grid se llena con autoRenderByPage: primeros 4 PRODUCTS_DATA -->
+            <div class="products-grid" id="productsGrid"></div>
+            <div style="margin-top:var(--space-5);text-align:center;">
+                <a href="./catalogo.html" class="btn-primary" style="display:inline-block;" onclick="event.preventDefault();navigateTo('catalogo');">🛍️ Ver Colección Completa</a>
             </div>
         </section>
     </main>
 
+    <!-- TESTIMONIOS -->
+    <section class="section testimonials-section reveal" id="testimonios" style="width:var(--container);margin-inline:auto;">
+        <div class="section-header">
+            <span class="section-eyebrow">Opiniones Reales</span>
+            <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+            <p class="section-subtitle">Más de 5.000 personas confían en Anthros para vestir su autenticidad.</p>
+        </div>
+        <div class="testimonials-carousel">
+            <div class="testimonials-track" id="testimonialsTrack">
+                <div class="testimonial-slide">
+                    <div class="testimonial-header"><div class="testimonial-avatar">👩</div><div class="testimonial-info"><h4>María Fernanda S.</h4><div class="testimonial-stars">★★★★★</div><div class="testimonial-verified">✓ Compra verificada · Camiseta Essence</div></div></div>
+                    <p class="testimonial-text">"¡La calidad es IMPRESIONANTE! La tela se siente premium y las costuras son perfectas. Mi talla M me quedó justo como esperaba. Definitivamente volveré a comprar con Anthros."</p>
+                </div>
+                <div class="testimonial-slide">
+                    <div class="testimonial-header"><div class="testimonial-avatar">👨</div><div class="testimonial-info"><h4>Carlos Andrés R.</h4><div class="testimonial-stars">★★★★★</div><div class="testimonial-verified">✓ Compra verificada · Camisa Lino Serenity</div></div></div>
+                    <p class="testimonial-text">"Compré la camisa de lino para una boda y ¡me robaron todos los cumplidos! Muy fresca, el corte es slim pero cómodo. Envío súper rápido en solo 2 días. 10/10."</p>
+                </div>
+                <div class="testimonial-slide">
+                    <div class="testimonial-header"><div class="testimonial-avatar">👩‍🦰</div><div class="testimonial-info"><h4>Valentina P.</h4><div class="testimonial-stars">★★★★☆</div><div class="testimonial-verified">✓ Compra verificada · Vestido Ethereal</div></div></div>
+                    <p class="testimonial-text">"Los diseños son únicos y se nota el amor al detalle. Me encantó que hubiera guía de tallas, porque elegí la correcta a la primera. El envío fue gratis por comprar más de 5 prendas."</p>
+                </div>
+                <div class="testimonial-slide">
+                    <div class="testimonial-header"><div class="testimonial-avatar">🧔</div><div class="testimonial-info"><h4>José Miguel L.</h4><div class="testimonial-stars">★★★★★</div><div class="testimonial-verified">✓ Compra verificada · Sudadera Urban Cozy</div></div></div>
+                    <p class="testimonial-text">"La sudadera es una nube! Me la pongo todos los días. La felpa interior es super suave y no se ha deformado después de 10 lavados. Antohros tiene un cliente fiel en mí."</p>
+                </div>
+            </div>
+            <div class="testimonial-nav">
+                <button class="testimonial-arrow" onclick="prevTestimonial()" aria-label="Anterior testimonio">‹</button>
+                <div class="testimonial-dots" id="testimonialDots"></div>
+                <button class="testimonial-arrow" onclick="nextTestimonial()" aria-label="Siguiente testimonio">›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter reveal">
+        <h2>✨ Sé el Primero en Saberlo</h2>
+        <p>Suscríbete a nuestro newsletter y obtén un <strong>10% de descuento</strong> en tu primera compra, además de acceso anticipado a nuevas colecciones y ofertas exclusivas.</p>
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="Tu correo electrónico" required>
+            <button type="submit" class="newsletter-btn">Suscribirme</button>
+        </form>
+    </section>
+
+    <!-- CONTACTO -->
+    <main style="padding-bottom: 0;">
+        <section class="section reveal" id="contacto">
+            <div class="section-header">
+                <span class="section-eyebrow">Estamos Aquí</span>
+                <h2 class="section-title">Contáctanos</h2>
+                <p class="section-subtitle">¿Tienes alguna pregunta o necesitas ayuda? Nuestro equipo está listo para acompañarte en tu experiencia Anthros.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-item reveal"><span class="contact-icon">📍</span><h3>Visítanos</h3><p>Carrera 43 #75-130<br>Barranquilla, Colombia</p></div>
+                <div class="contact-item reveal"><span class="contact-icon">📞</span><h3>Llámanos</h3><p>+57 (5) 123-4567<br>WhatsApp: +57 300-123-4567</p></div>
+                <div class="contact-item reveal"><span class="contact-icon">✉️</span><h3>Escríbenos</h3><p>hola@anthros.com<br>ventas@anthros.com</p></div>
+                <div class="contact-item reveal"><span class="contact-icon">🕐</span><h3>Horario</h3><p>Lun - Vie: 9:00 - 19:00<br>Sáb: 10:00 - 16:00</p></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER (enlaces a páginas reales) -->
     <footer>
-        <div class="footer-content">
-            <p>© 2024 ECO - Todos los derechos reservados</p>
-            <div class="footer-credits">
-                <p>Desarrollado con ❤️ por el equipo de ECO</p>
-                <p>Moda sostenible para un futuro mejor</p>
-                <p>Calidad y bienestar</p>
+        <div class="footer-inner">
+            <div class="footer-brand">ANTHROS</div>
+            <p class="footer-tagline">"Viste tu autenticidad. Vive tu esencia."</p>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Sobre Nosotros</h4>
+                    <p>Marca colombiana de moda premium. Creamos prendas que combinan diseño atemporal, calidad excepcional y producción consciente.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Colección</h4>
+                    <ul>
+                        <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Ver Catálogo Completo</a></li>
+                        <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Hombres</a></li>
+                        <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Mujeres</a></li>
+                        <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Nuevos</a></li>
+                        <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Ofertas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Ayuda</h4>
+                    <ul>
+                        <li><a href="./index.html#contacto" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
+                        <li><a href="#" onclick="event.preventDefault();showFAQModal();">Preguntas Frecuentes</a></li>
+                        <li><a href="#" onclick="event.preventDefault();showSizeGuideModal();">Guía de Tallas</a></li>
+                        <li><a href="./carrito.html" onclick="event.preventDefault();navigateTo('carrito');">Mi Carrito</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Cambios y Devoluciones</a></li>
+                        <li><a href="#">Garantía y Calidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-social">
+                <a href="#" class="social-icon" title="Instagram" aria-label="Instagram">📷</a>
+                <a href="#" class="social-icon" title="Facebook" aria-label="Facebook">📘</a>
+                <a href="#" class="social-icon" title="TikTok" aria-label="TikTok">🎵</a>
+                <a href="#" class="social-icon" title="WhatsApp" aria-label="WhatsApp">💬</a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 ANTHROS — Todos los derechos reservados</p>
+                <p>Hecho con 🔥 pasión por la moda colombiana · Barranquilla, Colombia</p>
             </div>
         </div>
     </footer>
-    <script src="calculos.js"></script>
+
+    <!-- UI COMPARTIDA: scroll top, toast, cart modal -->
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Volver arriba">↑</button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="cart-modal" id="cartModal" onclick="closeCartOutside(event)" role="dialog" aria-modal="true" aria-label="Carrito de compras">
+        <div class="cart-panel" onclick="event.stopPropagation()">
+            <div class="cart-header">
+                <h3>🛍️ Tu Carrito</h3>
+                <button class="cart-close" onclick="toggleCart()" aria-label="Cerrar carrito">×</button>
+            </div>
+            <div class="promo-section">
+                <div class="promo-input-wrapper">
+                    <input type="text" class="promo-input" id="promoInput" placeholder="Código de descuento (ej: BIENVENIDO)">
+                    <button class="promo-btn" onclick="applyPromo()">Aplicar</button>
+                </div>
+                <div class="promo-message" id="promoMessage"></div>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-summary" id="cartSummary">
+                <div class="cart-empty" id="cartEmpty">
+                    <div class="cart-empty-icon">🛒</div>
+                    <p>Tu carrito está vacío</p>
+                    <p>¡Añade prendas para comenzar tu experiencia Anthros!</p>
+                </div>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" style="display:none;" onclick="checkout()">Finalizar Compra</button>
+            <div style="padding: 8px 18px 18px;">
+                <a href="./carrito.html" class="qv-btn-secondary" style="display:block;text-align:center;text-decoration:none;margin-top:8px;" onclick="event.preventDefault();toggleCart();navigateTo('carrito');">🔍 Ver Carrito Completo →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="./calculos.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>
