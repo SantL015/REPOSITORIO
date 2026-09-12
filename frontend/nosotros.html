@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#780000">
+    <meta name="description" content="Conoce la misión, visión, pilares, historia, blog, redes sociales y canales de contacto de Anthros, firma colombiana de moda sostenible y funcional.">
+    <meta name="keywords" content="Anthros, moda sostenible, ropa consciente, misión, visión, moda colombiana, Santiago López Rubio">
+    <meta property="og:title" content="Nosotros | Anthros"
+    ><meta property="og:description" content="La historia y el propósito detrás de Anthros: ropa sostenible concebida desde la durabilidad, el equilibrio ambiental y la identidad.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="./nosotros.html">
+    <title>Nosotros | Anthros  Moda consciente y funcional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Anthros",
+      "description": "Firma colombiana de moda sostenible y funcional.",
+      "foundingDate": "2026-03-15",
+      "founder": { "@type": "Person", "name": "Santiago López Rubio" },
+      "url": "./nosotros.html",
+      "sameAs": ["https://www.instagram.com/", "https://www.facebook.com/", "https://www.tiktok.com/"]
+    }
+    </script>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <nav aria-label="Navegación principal">
+        <div class="nav-inner">
+            <a href="./index.html" class="nav-logo" onclick="event.preventDefault();navigateTo('home');">ANTHROS</a>
+            <ul class="nav-links">
+                <li><a href="./index.html" onclick="event.preventDefault();navigateTo('home');">Inicio</a></li>
+                <li><a href="./nosotros.html" class="active" aria-current="page">Nosotros</a></li>
+                <li><a href="./catalogo.html" onclick="event.preventDefault();navigateTo('catalogo');">Colección</a></li>
+                <li><a href="./favoritos.html" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
+                <li><a href="./pedidos.html" onclick="event.preventDefault();navigateTo('orders');">Pedidos</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema"></button>
+                <button class="favorites-btn" onclick="navigateTo('favorites')" aria-label="Ver favoritos"></button>
+                <button class="cart-btn" onclick="toggleCart()" aria-label="Abrir carrito"> <span class="cart-btn-label">Carrito</span><span class="cart-count" id="cartCount">0</span></button>
+                <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="about-page-hero">
+        <div class="about-page-hero-inner">
+            <nav class="breadcrumb" aria-label="Migas de pan"><a href="./index.html">Inicio</a><span>/</span><span aria-current="page">Nosotros</span></nav>
+            <p class="section-eyebrow">La escala humana de la moda</p>
+            <h1>Vestir también es <em>tomar posición.</em></h1>
+            <p>Conoce el propósito, las ideas y las personas que dan forma a Anthros.</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="about-nav section reveal" aria-labelledby="about-nav-title">
+            <div class="section-header"><span class="section-eyebrow">Explora Anthros</span><h2 id="about-nav-title" class="section-title">Una historia con varias puertas</h2></div>
+            <div class="about-nav-grid">
+                <a class="about-nav-card" href="#mision-vision"><span>01</span><h3>Misión y visión</h3><p>El norte detrás de cada colección.</p><strong>Leer más </strong></a>
+                <a class="about-nav-card" href="#blog"><span>02</span><h3>Blog de Anthros</h3><p>Ideas sobre ropa, cuidado y consumo consciente.</p><strong>Visitar blog </strong></a>
+                <a class="about-nav-card" href="#redes"><span>03</span><h3>Redes sociales</h3><p>El pulso diario de nuestra comunidad.</p><strong>Seguirnos </strong></a>
+                <a class="about-nav-card" href="#contacto"><span>04</span><h3>Contacta a Anthros</h3><p>Estamos aquí para acompañarte.</p><strong>Escribirnos </strong></a>
+            </div>
+        </section>
+
+        <section class="about-story section reveal" id="mision-vision" aria-labelledby="mision-title">
+            <div class="about-story-intro"><span class="section-eyebrow">01 / Propósito</span><h2 id="mision-title">Ropa para humanos, diseñada para permanecer.</h2></div>
+            <div class="about-story-copy">
+                <p><strong>Anthros</strong> nació el 15 de marzo de 2026 bajo la dirección de su CEO, <strong>Santiago López Rubio</strong>, con una premisa clara: devolverle la escala humana a la industria textil.</p>
+                <p>Entendemos la indumentaria no como una mercancía desechable, sino como una extensión de la identidad diaria. Diseñamos ropa sostenible concebida desde la durabilidad, el equilibrio ambiental y el respeto por las historias de quienes la visten.</p>
+                <div class="mission-grid">
+                    <article><h3>Misión</h3><p>Crear prendas de vestir sostenibles que combinen rigor técnico, responsabilidad ambiental y un propósito tangible. En Anthros desarrollamos colecciones responsables que representan la fuerza y la vitalidad del día a día, ofreciendo una alternativa real frente al consumo acelerado.</p></article>
+                    <article><h3>Visión</h3><p>Consolidar a Anthros como una firma referente en moda consciente y funcional, demostrando que la viabilidad comercial y la ética textil pueden convivir. Buscamos construir una red sólida de producción transparente que inspire un estándar más exigente y humano en la industria.</p></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="pillars-section section reveal" aria-labelledby="pillars-title">
+            <div class="section-header"><span class="section-eyebrow">02 / Principios</span><h2 id="pillars-title" class="section-title">Pilares fundamentales</h2></div>
+            <div class="pillars-grid">
+                <article><span>01</span><h3>Ropa para Humanos</h3><p>Priorizamos la usabilidad, el confort y la autenticidad sobre las tendencias efímeras.</p></article>
+                <article><span>02</span><h3>Sostenibilidad Operativa</h3><p>Seleccionamos textiles y procesos para reducir la huella ambiental sin comprometer la resistencia.</p></article>
+                <article><span>03</span><h3>Fuerza y Vitalidad</h3><p>Diseños de líneas limpias y carácter firme que acompañan el ritmo activo de nuestra comunidad.</p></article>
+                <article><span>04</span><h3>Transparencia Directa</h3><p>Hablamos con claridad sobre la procedencia y el impacto real de cada colección.</p></article>
+            </div>
+        </section>
+
+        <section class="about-journal section reveal" id="blog" aria-labelledby="blog-title">
+            <div class="section-header"><span class="section-eyebrow">03 / Ideas</span><h2 id="blog-title" class="section-title">Blog de Anthros</h2><p class="section-subtitle">Notas para vestir mejor, cuidar más y comprar con intención.</p></div>
+            <div class="journal-grid">
+                <article><span>Materiales</span><h3>Cómo reconocer una prenda hecha para durar</h3><p>Una guía breve para mirar fibras, costuras y acabados antes de elegir.</p><a href="#contacto">Leer próximamente </a></article>
+                <article><span>Cuidado</span><h3>El ritual de cuidar tu ropa</h3><p>Lavar menos, reparar a tiempo y conservar mejor: pequeños gestos con gran impacto.</p><a href="#contacto">Leer próximamente </a></article>
+                <article><span>Comunidad</span><h3>La historia que llevas puesta</h3><p>Conversaciones con personas que entienden el estilo como una forma de presencia.</p><a href="#contacto">Leer próximamente </a></article>
+            </div>
+        </section>
+
+        <section class="socials-section section reveal" id="redes" aria-labelledby="social-title">
+            <div><span class="section-eyebrow">04 / Comunidad</span><h2 id="social-title">Anthros se mueve contigo.</h2><p>Descubre nuevas prendas, procesos y conversaciones en nuestros canales.</p></div>
+            <div class="social-links-large"><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram <span></span></a><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook <span></span></a><a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">TikTok <span></span></a></div>
+        </section>
+
+        <section class="contact-about section reveal" id="contacto" aria-labelledby="contact-about-title">
+            <div><span class="section-eyebrow">05 / Hablemos</span><h2 id="contact-about-title">Contacta a Anthros</h2><p>¿Tienes una pregunta, una colaboración o una historia que compartir?</p></div>
+            <address><a href="mailto:hola@anthros.com">hola@anthros.com</a><a href="tel:+573001234567">+57 300 123 4567</a><span>Barranquilla, Colombia</span></address>
+        </section>
+    </main>
+
+    <footer><div class="footer-inner"><div class="footer-brand">ANTHROS</div><p class="footer-tagline">Viste tu autenticidad. Vive tu esencia.</p><div class="footer-bottom"><p> 2026 ANTHROS  Todos los derechos reservados</p><p>Moda colombiana consciente y funcional</p></div></div></footer>
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Volver arriba"></button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./calculos.js"></script><script src="./app.js"></script>
+</body>
+</html>
+
+
+
+
+

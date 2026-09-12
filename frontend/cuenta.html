@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crea tu cuenta Anthros y personaliza tus preferencias de moda, ciudad, tallas y materiales favoritos.">
+    <title>Mi cuenta | Anthros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="account-page">
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <nav aria-label="Navegación principal"><div class="nav-inner"><a href="./index.html" class="nav-logo">ANTHROS</a><ul class="nav-links"><li><a href="./index.html">Inicio</a></li><li><a href="./nosotros.html">Nosotros</a></li><li><a href="./catalogo.html">Colección</a></li><li><a href="./favoritos.html">Favoritos</a></li><li><a href="./pedidos.html">Pedidos</a></li></ul><div class="nav-actions"><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema"></button><a class="cart-btn" href="./carrito.html"> <span class="cart-btn-label">Carrito</span><span class="cart-count" id="cartCount">0</span></a></div></div></nav>
+
+    <main class="account-layout">
+        <section class="account-intro"><span class="section-eyebrow">Tu espacio Anthros</span><h1>Viste lo que <em>te representa.</em></h1><p>Guarda tus preferencias, recibe recomendaciones más precisas y vuelve a encontrar tus piezas favoritas.</p><div class="account-signals"><span><strong>01</strong> Recomendaciones a tu medida</span><span><strong>02</strong> Tallas y ciudad guardadas</span><span><strong>03</strong> Historial bajo tu control</span></div></section>
+        <section class="account-card" id="accountCard">
+            <div class="account-card-heading"><span class="section-eyebrow">Primer paso</span><h2>Crea tu cuenta</h2><p>No guardamos contraseñas. Tu perfil se conserva localmente en este dispositivo.</p></div>
+            <div class="account-methods"><button type="button" class="account-method active" data-method="google" onclick="chooseAccountMethod('google')"><span class="account-method-icon">G</span><span><strong>Continuar con Google</strong><small>Usa tu cuenta de Google</small></span></button><button type="button" class="account-method" data-method="phone" onclick="chooseAccountMethod('phone')"><span class="account-method-icon"></span><span><strong>Usar teléfono</strong><small>Recibe novedades por WhatsApp</small></span></button></div>
+            <form class="account-form" onsubmit="saveAccount(event)">
+                <input type="hidden" id="accountMethod" value="google">
+                <label for="accountName">Nombre completo<input id="accountName" name="name" autocomplete="name" required placeholder="Tu nombre"></label>
+                <label for="accountEmail" id="accountEmailField">Correo de Google<input id="accountEmail" name="email" type="email" autocomplete="email" required placeholder="nombre@gmail.com"></label>
+                <label for="accountPhone" id="accountPhoneField" hidden>Número de teléfono<input id="accountPhone" name="phone" type="tel" autocomplete="tel" placeholder="300 000 0000"></label>
+                <button class="account-submit" type="submit">Crear mi cuenta <span></span></button>
+                <p class="account-privacy">Al continuar aceptas nuestros <a href="./terminos.html">Términos</a> y <a href="./privacidad.html">Política de Privacidad</a>.</p>
+            </form>
+        </section>
+    </main>
+
+    <section class="account-settings" id="accountSettings" hidden>
+        <div class="settings-header"><span class="section-eyebrow">Personaliza tu experiencia</span><h2>Conoce tu forma de vestir.</h2><p>Estos datos ayudan a ordenar las recomendaciones. Puedes cambiarlos cuando quieras.</p></div>
+        <form class="settings-card" onsubmit="saveAccountPreferences(event)">
+            <div class="settings-section"><div><span class="settings-number">01</span><h3>Tu contexto</h3><p>Usaremos tu ciudad para orientar envíos y clima.</p></div><div class="settings-fields"><label for="profileCity">Ciudad de residencia<select id="profileCity"><option value="">Selecciona tu ciudad</option><option>Barranquilla</option><option>Bogotá</option><option>Cartagena</option><option>Medellín</option><option>Cali</option><option>Otra ciudad</option></select></label><label for="profileAge">Rango de edad<select id="profileAge"><option value="">Prefiero no decirlo</option><option>18 - 24</option><option>25 - 34</option><option>35 - 44</option><option>45+</option></select></label></div></div>
+            <div class="settings-section"><div><span class="settings-number">02</span><h3>Tu silueta</h3><p>Para filtrar tallas y cortes desde el primer vistazo.</p></div><div class="settings-fields"><label for="profileGender">Qué buscas<select id="profileGender"><option value="unisex">Un poco de todo</option><option value="mujer">Mujer</option><option value="hombre">Hombre</option></select></label><label for="profileSize">Talla habitual<select id="profileSize"><option value="">Selecciona una talla</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></label></div></div>
+            <div class="settings-section"><div><span class="settings-number">03</span><h3>Tu materia</h3><p>Elige hasta tres materiales que te gustaría descubrir.</p></div><div class="choice-grid" id="materialChoices"><label><input type="checkbox" value="algodon"> Algodón</label><label><input type="checkbox" value="lino"> Lino</label><label><input type="checkbox" value="reciclado"> Reciclado</label><label><input type="checkbox" value="viscosa"> Viscosa</label></div></div>
+            <div class="settings-section"><div><span class="settings-number">04</span><h3>Tu ritmo</h3><p>Ayúdanos a entender cuándo quieres descubrir algo nuevo.</p></div><div class="settings-fields"><label for="profileStyle">Estilo principal<select id="profileStyle"><option value="atemporal">Atemporal</option><option value="casual">Casual</option><option value="urbano">Urbano</option><option value="especial">Ocasiones especiales</option></select></label><label for="profileFrequency">Frecuencia de compra<select id="profileFrequency"><option value="ocasional">Ocasional</option><option value="mensual">Una vez al mes</option><option value="frecuente">Varias veces al año</option></select></label></div></div>
+            <div class="settings-actions"><button class="account-submit" type="submit">Guardar preferencias <span></span></button><button type="button" class="settings-reset" onclick="resetAccount()">Cerrar sesión local</button></div>
+        </form>
+    </section>
+
+    <footer><div class="footer-inner"><div class="footer-brand">ANTHROS</div><p class="footer-tagline">Viste tu autenticidad. Vive tu esencia.</p><div class="footer-bottom"><p> 2026 ANTHROS · Moda colombiana consciente</p><a href="./index.html">Volver al inicio</a></div></div></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./calculos.js"></script><script src="./app.js"></script><script>document.addEventListener('DOMContentLoaded', initAccountPage);</script>
+</body>
+</html>
+
+
+
+
+

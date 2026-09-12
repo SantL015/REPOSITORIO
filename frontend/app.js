@@ -1,4 +1,4 @@
-        let cart = [];
+﻿        let cart = [];
         let appliedPromo = null;
         let menuOpen = false;
         const PROMO_CODES = {
@@ -41,9 +41,9 @@
             toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
         }
 
-        function addToCart(product) {
-            const card = event.target.closest('.product-card');
-            let selectedSize = 'M';
+        function legacyAddToCart(product) {
+            const card = typeof event !== 'undefined' && event?.target?.closest ? event.target.closest('.product-card') : null;
+            let selectedSize = product._forcedSize || 'M';
             if (card) {
                 const sizeEl = card.querySelector('.size-option.selected');
                 if (sizeEl) {
@@ -62,6 +62,7 @@
             else cart.push({ ...product, size: selectedSize, qty: 1 });
             updateCart();
             saveCart();
+            recordRecommendationAction({ type: 'cart', productId: product.id });
             showToast(`${product.name} añadido al carrito`, 'success');
         }
 
@@ -79,7 +80,7 @@
             saveCart();
         }
 
-        function updateCart() {
+        function legacyUpdateCart() {
             const itemsEl = document.getElementById('cartItems');
             const emptyEl = document.getElementById('cartEmpty');
             const summaryEl = document.getElementById('cartSummary');
@@ -109,12 +110,12 @@
                         <div class="cart-item-size">Talla: ${item.size} · ${item.category}</div>
                         <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
                         <div class="cart-item-qty">
-                            <button class="qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Restar">−</button>
+                            <button class="qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Restar"></button>
                             <span class="qty-value">${item.qty}</span>
                             <button class="qty-btn" onclick="changeQty(${idx}, 1)" aria-label="Sumar">+</button>
                         </div>
                     </div>
-                    <button class="cart-remove" onclick="removeFromCart(${idx})" aria-label="Eliminar">✕</button>
+                    <button class="cart-remove" onclick="removeFromCart(${idx})" aria-label="Eliminar"></button>
                 </div>
             `).join('');
 
@@ -135,15 +136,15 @@
                 ${appliedPromo ? `
                 <div class="summary-row discount-row">
                     <span>Código (${appliedPromo}%)</span>
-                    <span>− ${formatPrice(discountPromo)}</span>
+                    <span> ${formatPrice(discountPromo)}</span>
                 </div>` : ''}
                 ${umbralDisc > 0 ? `
                 <div class="summary-row discount-row">
-                    <span>🎁 Bono > $100k</span>
-                    <span>− ${formatPrice(umbralDisc)}</span>
+                    <span> Bono > $100k</span>
+                    <span> ${formatPrice(umbralDisc)}</span>
                 </div>` : ''}
                 <div class="summary-row">
-                    <span>Envío ${shipping === 0 ? '<span style="color:var(--success);">· Gratis 🎉</span>' : ''}</span>
+                    <span>Envío ${shipping === 0 ? '<span style="color:var(--success);">· Gratis </span>' : ''}</span>
                     <span>${shipping === 0 ? formatPrice(0) : formatPrice(shipping)}</span>
                 </div>
                 <div class="summary-row total-row">
@@ -161,14 +162,14 @@
             if (!code) { msg.textContent = 'Ingresa un código'; msg.className = 'promo-message error'; showToast('Ingresa un código promocional', 'error'); return; }
             if (PROMO_CODES[code]) {
                 appliedPromo = PROMO_CODES[code];
-                msg.textContent = `✓ ${appliedPromo}% de descuento aplicado`;
+                msg.textContent = ` ${appliedPromo}% de descuento aplicado`;
                 msg.className = 'promo-message success';
                 updateCart();
                 saveCart();
                 showToast(`¡${appliedPromo}% OFF aplicado correctamente!`, 'success');
             } else {
                 appliedPromo = null;
-                msg.textContent = '✗ Código inválido';
+                msg.textContent = ' Código inválido';
                 msg.className = 'promo-message error';
                 saveCart();
                 showToast('Código inválido', 'error');
@@ -176,6 +177,10 @@
         }
 
         function toggleCart() {
+            if (cart.length === 0 && !window.location.pathname.toLowerCase().includes('carrito')) {
+                window.location.href = './carrito.html';
+                return;
+            }
             const cartModal = document.getElementById('cartModal');
             if (!cartModal) return;
             cartModal.classList.toggle('open');
@@ -187,12 +192,17 @@
         }
 
         function checkout() {
-            if (cart.length === 0) return;
+            if (cart.length === 0) {
+                window.location.href = './carrito.html';
+                return;
+            }
+            window.location.href = './checkout.html';
+            return;
             const qty = cart.reduce((s, i) => s + i.qty, 0);
             const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
             calcularTotalPedido(sub / Math.max(qty,1), qty, 5000);
             const nuevoPedido = saveOrderToHistory();
-            showToast('🎉 ¡Compra exitosa! Gracias por elegir Anthros', 'success');
+            showToast(' ¡Compra exitosa! Gracias por elegir Anthros', 'success');
             setTimeout(() => {
                 const waUrl = generarMensajeWhatsAppCarrito();
                 cart = [];
@@ -204,10 +214,10 @@
                 toggleCart();
                 if (nuevoPedido && waUrl) {
                     showGenericModal(
-                        '✅ Pedido #' + nuevoPedido.id.slice(-6),
+                        ' Pedido #' + nuevoPedido.id.slice(-6),
                         `<p style="color:var(--text-muted);margin-bottom:16px;line-height:1.6;">Tu pedido ha sido registrado con éxito. ¿Deseas continuar tu compra por <strong style="color:var(--red-primary);">WhatsApp</strong> con un asesor?</p>
                          <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                            <a href="${waUrl}" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;padding:12px 16px;border-radius:var(--radius-md);background:#25D366;color:#fff;font-weight:700;text-align:center;min-width:180px;">💚 Ir a WhatsApp</a>
+                            <a href="${waUrl}" target="_blank" rel="noopener noreferrer" style="flex:1;text-decoration:none;padding:12px 16px;border-radius:var(--radius-md);background:#25D366;color:#fff;font-weight:700;text-align:center;min-width:180px;"> Ir a WhatsApp</a>
                             <button onclick="closeGenericModal()" style="flex:1;padding:12px 16px;border-radius:var(--radius-md);background:transparent;border:2px solid var(--red-primary);color:var(--red-primary);font-weight:700;cursor:pointer;min-width:180px;">Cerrar</button>
                          </div>
                          <p style="font-size:var(--fs-xs);color:var(--text-light);margin-top:14px;">Tu pedido se guardó en Historial · ID: ${nuevoPedido.id}</p>
@@ -215,6 +225,54 @@
                     );
                 }
             }, 1700);
+        }
+
+        function initCheckoutPage() {
+            const itemsEl = document.getElementById('checkoutItems');
+            const totalsEl = document.getElementById('checkoutTotals');
+            if (!itemsEl || !totalsEl) return;
+            if (!cart.length) {
+                itemsEl.innerHTML = '<p class="checkout-empty">Tu carrito está vacío. <a href="./catalogo.html">Explorar colección</a></p>';
+                totalsEl.innerHTML = '';
+            } else {
+                const breakdown = calcularDesglosePedidoCompleto();
+                itemsEl.innerHTML = cart.map(item => `<div class="checkout-item"><img src="${escapeHTML(item.img)}" alt="${escapeHTML(item.name)}"><div><strong>${escapeHTML(item.name)}</strong><small>${item.qty} × ${formatPrice(item.price)} · Talla ${escapeHTML(item.size || 'M')}</small></div><b>${formatPrice(item.price * item.qty)}</b></div>`).join('');
+                totalsEl.innerHTML = `<div class="checkout-total-row"><span>Subtotal</span><b>${formatPrice(breakdown.subtotal)}</b></div>${breakdown.promoDiscount ? `<div class="checkout-total-row discount-row"><span>Descuento</span><b> ${formatPrice(breakdown.promoDiscount)}</b></div>` : ''}${breakdown.umbralDisc ? `<div class="checkout-total-row discount-row"><span>Bono Anthros</span><b> ${formatPrice(breakdown.umbralDisc)}</b></div>` : ''}<div class="checkout-total-row"><span>Envío</span><b>${breakdown.shipping ? formatPrice(breakdown.shipping) : 'Gratis'}</b></div><div class="checkout-total-row checkout-grand-total"><span>Total</span><b>${formatPrice(breakdown.total)}</b></div>`;
+            }
+            const city = document.getElementById('checkoutCity');
+            const cash = document.querySelector('#cashPaymentOption input');
+            const note = document.getElementById('cashPaymentNote');
+            const updateCashAvailability = () => {
+                const available = city.value === 'Barranquilla';
+                cash.disabled = !available;
+                document.getElementById('cashPaymentOption').classList.toggle('disabled', !available);
+                note.textContent = available ? 'Contraentrega disponible para Barranquilla.' : 'Selecciona Barranquilla para activar contraentrega.';
+                if (!available && cash.checked) cash.checked = false;
+            };
+            city.addEventListener('change', updateCashAvailability);
+            updateCashAvailability();
+            document.querySelectorAll('input[name="payment"]').forEach(input => input.addEventListener('change', () => {
+                const extra = document.getElementById('paymentExtra');
+                extra.innerHTML = input.value === 'card' ? '<label>Número de tarjeta<input required inputmode="numeric" placeholder="0000 0000 0000 0000"></label><div class="checkout-fields"><label>Vencimiento<input required placeholder="MM/AA"></label><label>CVV<input required inputmode="numeric" placeholder="123"></label></div>' : '';
+            }));
+        }
+
+        function finalizeCheckout(e) {
+            e.preventDefault();
+            if (!cart.length) { showToast('Añade productos antes de pagar', 'error'); return; }
+            const form = e.currentTarget;
+            const data = new FormData(form);
+            if (data.get('payment') === 'cash' && data.get('city') !== 'Barranquilla') { showToast('Contraentrega solo está disponible en Barranquilla', 'error'); return; }
+            if (!validateEmail(data.get('email')) || !validatePhone(data.get('phone')) || !validateRequired(data.get('name'), 3, 100) || !validateRequired(data.get('address'), 5, 180)) {
+                showToast('Revisa nombre, correo, teléfono y dirección', 'error');
+                return;
+            }
+            const order = saveOrderToHistory();
+            const orderId = order ? order.id : 'ORD-' + Date.now().toString(36).toUpperCase();
+            cart = [];
+            appliedPromo = null;
+            saveCart();
+            form.innerHTML = `<div class="checkout-success"><span></span><p class="section-eyebrow">Pedido confirmado</p><h2>Gracias por elegir Anthros.</h2><p>Tu pedido <strong>#${orderId.slice(-8)}</strong> fue registrado. Te enviaremos los detalles a <strong>${data.get('email')}</strong>.</p><a href="./index.html" class="checkout-submit">Volver al inicio </a></div>`;
         }
 
         function selectSize(el) {
@@ -225,7 +283,7 @@
         function toggleFav(btn) {
             btn.classList.toggle('active');
             const esActivo = btn.classList.contains('active');
-            btn.textContent = esActivo ? '♥' : '♡';
+            btn.textContent = esActivo ? 'Guardado' : 'Guardar';
             const card = btn.closest('.product-card');
             if (card) {
                 const addBtn = card.querySelector('.add-to-cart-btn');
@@ -234,28 +292,14 @@
                 const id = match ? Number(match[1]) : null;
                 if (id) toggleFavoritoById(id);
             }
-            showToast(esActivo ? '♥ Añadido a favoritos' : '♡ Eliminado de favoritos', 'info');
+            showToast(esActivo ? ' Añadido a favoritos' : ' Eliminado de favoritos', 'info');
         }
 
         function filterProducts(cat, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                const cats = card.dataset.category || '';
-                const match = cat === 'all' || cats.includes(cat);
-                if (match) {
-                    card.style.display = '';
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'scale(1) translateY(0)';
-                    }, 40);
-                } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.85) translateY(10px)';
-                    setTimeout(() => { card.style.display = 'none'; }, 280);
-                }
-            });
+            _catalogFilters.category = cat;
+            applyCatalogFilters();
         }
 
         function subscribeNewsletter(e) {
@@ -263,17 +307,49 @@
             const input = document.getElementById('newsletterEmail');
             const email = String(input?.value || '').trim();
             if (!validateEmail(email)) {
-                showToast('❌ Ingresa un correo válido', 'error');
+                showToast(' Ingresa un correo válido', 'error');
                 if (input) { input.style.borderColor = 'var(--red-primary)'; setTimeout(() => input.style.borderColor = '', 1500); }
                 return;
             }
             const nuevo = saveNewsletterSubscriber(email);
             if (nuevo) {
-                showToast('✨ ¡Suscripción exitosa! 10% OFF listo', 'success');
+                showToast(' ¡Suscripción exitosa! 10% OFF listo', 'success');
             } else {
-                showToast('ℹ️ Ya estás suscrito a nuestras novedades', 'info');
+                showToast(' Ya estás suscrito a nuestras novedades', 'info');
             }
             if (input) input.value = '';
+        }
+
+        function closeNewsletterFloat() {
+            const newsletter = document.getElementById('newsletterFloat');
+            if (newsletter) newsletter.classList.add('is-closed');
+        }
+
+        function subscribeLoyalty(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('loyaltyEmail');
+            const tierInput = document.getElementById('loyaltyTier');
+            const email = String(emailInput?.value || '').trim().toLowerCase();
+            const tier = String(tierInput?.value || 'esencial');
+            if (!validateEmail(email)) {
+                showToast('Ingresa un correo válido para unirte', 'error');
+                emailInput?.focus();
+                return;
+            }
+            try {
+                const members = JSON.parse(localStorage.getItem(STORAGE_KEYS.LOYALTY) || '[]');
+                if (members.some(member => member.email === email)) {
+                    showToast('Este correo ya pertenece al Círculo', 'info');
+                } else {
+                    members.push({ email, tier, joinedAt: new Date().toISOString(), points: 0 });
+                    localStorage.setItem(STORAGE_KEYS.LOYALTY, JSON.stringify(members));
+                    showToast('Bienvenido al Círculo Anthros', 'success');
+                }
+                if (emailInput) emailInput.value = '';
+            } catch (error) {
+                console.warn('No fue posible guardar la membresía', error);
+                showToast('No pudimos completar el registro', 'error');
+            }
         }
 
         function scrollToTop() {
@@ -358,12 +434,12 @@
         });
 
         const PRODUCT_CATEGORIES = Object.freeze({
-            ALL: { key: 'all', label: 'Todos', icon: '🛍️' },
-            HOMBRES: { key: 'hombres', label: 'Hombres', icon: '👔' },
-            MUJERES: { key: 'mujeres', label: 'Mujeres', icon: '👗' },
-            ACCESORIOS: { key: 'accesorios', label: 'Accesorios', icon: '👜' },
-            OFERTAS: { key: 'ofertas', label: 'Ofertas', icon: '🔥' },
-            NUEVOS: { key: 'nuevos', label: 'Nuevos', icon: '✨' }
+            ALL: { key: 'all', label: 'Todos', icon: '' },
+            HOMBRES: { key: 'hombres', label: 'Hombres', icon: '' },
+            MUJERES: { key: 'mujeres', label: 'Mujeres', icon: '' },
+            ACCESORIOS: { key: 'accesorios', label: 'Accesorios', icon: '' },
+            OFERTAS: { key: 'ofertas', label: 'Ofertas', icon: '' },
+            NUEVOS: { key: 'nuevos', label: 'Nuevos', icon: '' }
         });
 
         const AVAILABLE_SIZES = Object.freeze({
@@ -395,8 +471,11 @@
             FAVORITES: 'anthros_favorites_v1',
             PROMO_APLIED: 'anthros_promo_v1',
             NEWSLETTER: 'anthros_newsletter_v1',
+            LOYALTY: 'anthros_loyalty_v1',
+            RECOMMENDATIONS: 'anthros_recommendations_v1',
             ORDER_HISTORY: 'anthros_orders_v1',
-            USER_PREFS: 'anthros_user_prefs_v1'
+            USER_PREFS: 'anthros_user_prefs_v1',
+            ACCOUNT: 'anthros_account_v1'
         });
 
         const FAQ_DATA = Object.freeze([
@@ -409,12 +488,12 @@
         ]);
 
         const PRODUCTS_DATA = Object.freeze([
-            { id: 1, name: 'Camiseta Manga Larga Essence',  category: 'mujeres ofertas',  gender: 'Mujer', line: 'Básicos',    price: 63920, originalPrice: 79900, discount: 20, isNew: false, badge: '-20%', sizes: ['S','M','L'], img: './camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp', desc: 'Elegancia atemporal en algodón premium. Transpirable, suave y perfecta para cada estación del año.', rating: 5, reviews: 124 },
-            { id: 2, name: 'Camisa Lino Serenity',          category: 'hombres nuevos',   gender: 'Hombre', line: 'Camisas',   price: 125000, originalPrice: null, discount: 0, isNew: true, badge: 'Nuevo', sizes: ['S','M','L','XL'], img: './Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif', desc: 'Lino premium, ligero y transpirable. Ideal para eventos especiales o el día a día con estilo.', rating: 4, reviews: 87 },
-            { id: 3, name: 'Camiseta Essential Blanca',     category: 'hombres ofertas',  gender: 'Hombre', line: 'Básicos',   price: 67915, originalPrice: 79900, discount: 15, isNew: false, badge: '-15%', sizes: ['S','M','L','XL'], img: './Rebeld-Enjoylife-Camiseta-Essential-Blanca-F-500x500.png', desc: 'El básico indispensable. Algodón 100% peinado, corte clásico y versátil para cualquier look.', rating: 5, reviews: 312 },
-            { id: 4, name: 'Camisa Rayas Coastal',          category: 'hombres',          gender: 'Hombre', line: 'Casual',    price: 79900, originalPrice: null, discount: 0, isNew: false, badge: '', sizes: ['S','M','L'], img: './camisa-rayas-manga-corta-ecologica-350x464.jpg', desc: 'Estilo náutico con un toque contemporáneo. Perfecta para looks casuales y días soleados.', rating: 4, reviews: 58 },
-            { id: 5, name: 'Sudadera Urban Cozy',           category: 'hombres ofertas',  gender: 'Hombre', line: 'Sudaderas', price: 76930, originalPrice: 109900, discount: 30, isNew: false, badge: '-30%', sizes: ['S','M','L','XL'], img: './adis-gris-19053-742485_019053-1_703c77d9-da0b-4aec-b78a-a613020cff3a.webp', desc: 'Calidez urbana en suave felpa premium. Ideal para días frescos con un toque de estilo moderno.', rating: 5, reviews: 201 },
-            { id: 6, name: 'Vestido Ethereal Bloom',        category: 'mujeres nuevos',   gender: 'Mujer', line: 'Vestidos', price: 149900, originalPrice: null, discount: 0, isNew: true, badge: 'Nuevo', sizes: ['XS','S','M','L'], img: './images (2).jpg', desc: 'Diseño versátil y delicado. Fabricada con materiales de alta calidad para máximo confort y estilo.', rating: 5, reviews: 76 }
+            { id: 1, name: 'Camiseta Manga Larga Essence', category: 'mujeres ofertas', gender: 'Mujer', line: 'Básicos', price: 63920, originalPrice: 79900, discount: 20, isNew: false, badge: '-20%', sizes: ['S','M','L'], collection: 'Esenciales', year: 2026, material: 'Algodón orgánico 100%', colors: ['Marfil', 'Terracota'], shipping: '3-5 días hábiles', care: 'Lavar en frío y secar a la sombra', img: './camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp', desc: 'Elegancia atemporal en algodón premium. Transpirable, suave y perfecta para cada estación del año.', rating: 5, reviews: 124 },
+            { id: 2, name: 'Camisa Lino Serenity', category: 'hombres nuevos', gender: 'Hombre', line: 'Camisas', price: 125000, originalPrice: null, discount: 0, isNew: true, badge: 'Nuevo', sizes: ['S','M','L','XL'], collection: 'Horizonte', year: 2026, material: 'Lino europeo certificado', colors: ['Arena', 'Blanco humo'], shipping: '3-5 días hábiles', care: 'Lavar a mano y planchar a baja temperatura', img: './Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif', desc: 'Lino premium, ligero y transpirable. Ideal para eventos especiales o el día a día con estilo.', rating: 4, reviews: 87 },
+            { id: 3, name: 'Camiseta Essential Blanca', category: 'hombres ofertas', gender: 'Hombre', line: 'Básicos', price: 67915, originalPrice: 79900, discount: 15, isNew: false, badge: '-15%', sizes: ['S','M','L','XL'], collection: 'Esenciales', year: 2026, material: 'Algodón peinado 100%', colors: ['Blanco óptico', 'Negro carbón'], shipping: '3-5 días hábiles', care: 'Lavar del revés en ciclo suave', img: './Rebeld-Enjoylife-Camiseta-Essential-Blanca-F-500x500.png', desc: 'El básico indispensable. Algodón 100% peinado, corte clásico y versátil para cualquier look.', rating: 5, reviews: 312 },
+            { id: 4, name: 'Camisa Rayas Coastal', category: 'hombres', gender: 'Hombre', line: 'Casual', price: 79900, originalPrice: null, discount: 0, isNew: false, badge: '', sizes: ['S','M','L'], collection: 'Horizonte', year: 2025, material: 'Algodón reciclado y lino', colors: ['Azul costa', 'Marfil'], shipping: '3-5 días hábiles', care: 'Lavar en frío con colores similares', img: './camisa-rayas-manga-corta-ecologica-350x464.jpg', desc: 'Estilo náutico con un toque contemporáneo. Perfecta para looks casuales y días soleados.', rating: 4, reviews: 58 },
+            { id: 5, name: 'Sudadera Urban Cozy', category: 'hombres ofertas', gender: 'Hombre', line: 'Sudaderas', price: 76930, originalPrice: 109900, discount: 30, isNew: false, badge: '-30%', sizes: ['S','M','L','XL'], collection: 'Movimiento', year: 2025, material: 'Algodón reciclado y felpa suave', colors: ['Gris humo', 'Verde bosque'], shipping: '3-5 días hábiles', care: 'Lavar del revés y no usar secadora', img: './adis-gris-19053-742485_019053-1_703c77d9-da0b-4aec-b78a-a613020cff3a.webp', desc: 'Calidez urbana en suave felpa premium. Ideal para días frescos con un toque de estilo moderno.', rating: 5, reviews: 201 },
+            { id: 6, name: 'Vestido Ethereal Bloom', category: 'mujeres nuevos', gender: 'Mujer', line: 'Vestidos', price: 149900, originalPrice: null, discount: 0, isNew: true, badge: 'Nuevo', sizes: ['XS','S','M','L'], collection: 'Horizonte', year: 2026, material: 'Viscosa ECOVERO', colors: ['Rosa arcilla', 'Verde salvia'], shipping: '3-5 días hábiles', care: 'Lavar a mano y colgar para secar', img: './images (2).jpg', desc: 'Diseño versátil y delicado. Fabricada con materiales de alta calidad para máximo confort y estilo.', rating: 5, reviews: 76 }
         ]);
 
         /* =========================================================
@@ -426,6 +505,48 @@
         let newsletterSubscribers = [];
         let orderHistory = [];
         let userPreferences = { theme: 'warm', currency: 'COP' };
+        let userAccount = null;
+
+        const CART_LIMITS = Object.freeze({ MAX_QTY_PER_ITEM: 20, MAX_TOTAL_ITEMS: 100 });
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[character]));
+        }
+
+        function normalizeCartItem(item) {
+            if (!item || !Number.isInteger(Number(item.id))) return null;
+            const product = PRODUCTS_DATA.find(candidate => candidate.id === Number(item.id));
+            if (!product) return null;
+            const size = String(item.size || product.sizes?.[0] || 'M');
+            const qty = Math.min(CART_LIMITS.MAX_QTY_PER_ITEM, Math.max(1, Math.floor(Number(item.qty) || 1)));
+            if (!product.sizes?.includes(size)) return { ...product, size: product.sizes?.[0] || 'M', qty };
+            return { ...product, size, qty };
+        }
+
+        function normalizeCart(items) {
+            if (!Array.isArray(items)) return [];
+            const normalized = [];
+            let total = 0;
+            items.forEach(item => {
+                const valid = normalizeCartItem(item);
+                if (!valid || total >= CART_LIMITS.MAX_TOTAL_ITEMS) return;
+                valid.qty = Math.min(valid.qty, CART_LIMITS.MAX_TOTAL_ITEMS - total);
+                const existing = normalized.find(current => current.id === valid.id && current.size === valid.size);
+                if (existing) existing.qty = Math.min(CART_LIMITS.MAX_QTY_PER_ITEM, existing.qty + valid.qty);
+                else normalized.push(valid);
+                total = normalized.reduce((sum, current) => sum + current.qty, 0);
+            });
+            return normalized;
+        }
+
+        function getProductPayload(product, size, qty = 1) {
+            const source = PRODUCTS_DATA.find(candidate => candidate.id === Number(product?.id));
+            if (!source) return null;
+            const selectedSize = source.sizes?.includes(size) ? size : source.sizes?.[0] || 'M';
+            return { ...source, size: selectedSize, qty: Math.min(CART_LIMITS.MAX_QTY_PER_ITEM, Math.max(1, Number(qty) || 1)) };
+        }
 
         /* =========================================================
            MÓDULO 3 · FUNCIONES DE CÁLCULO EXTENDIDAS
@@ -561,10 +682,11 @@
 
         function saveCart() {
             if (!soportaStorage()) return;
-            try { localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart)); } catch (e) { console.warn('saveCart falló', e); }
-            if (appliedPromo !== null) {
+            try { localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(normalizeCart(cart))); } catch (e) { console.warn('saveCart falló', e); }
+            if (Number.isFinite(appliedPromo) && appliedPromo > 0 && appliedPromo <= 100) {
                 localStorage.setItem(STORAGE_KEYS.PROMO_APLIED, String(appliedPromo));
             } else {
+                appliedPromo = null;
                 localStorage.removeItem(STORAGE_KEYS.PROMO_APLIED);
             }
         }
@@ -575,10 +697,12 @@
                 const data = localStorage.getItem(STORAGE_KEYS.CART);
                 if (data) {
                     const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed)) cart = parsed;
+                    cart = normalizeCart(parsed);
                 }
                 const promo = localStorage.getItem(STORAGE_KEYS.PROMO_APLIED);
-                if (promo) appliedPromo = Number(promo);
+                const promoValue = Number(promo);
+                appliedPromo = Object.values(PROMO_CODES).includes(promoValue) ? promoValue : null;
+                saveCart();
             } catch (e) { console.warn('loadCart falló', e); }
         }
 
@@ -591,7 +715,9 @@
             if (!soportaStorage()) return;
             try {
                 const data = localStorage.getItem(STORAGE_KEYS.FAVORITES);
-                if (data) favorites = JSON.parse(data);
+                const parsed = data ? JSON.parse(data) : [];
+                favorites = [...new Set(Array.isArray(parsed) ? parsed.map(Number).filter(id => PRODUCTS_DATA.some(product => product.id === id)) : [])];
+                saveFavorites();
                 sincronizarFavoritosUI();
             } catch (e) { console.warn(e); }
         }
@@ -608,7 +734,7 @@
                 const id = match ? Number(match[1]) : null;
                 if (id && favorites.includes(id)) {
                     btn.classList.add('active');
-                    btn.textContent = '♥';
+                    btn.textContent = '';
                 }
             });
         }
@@ -679,6 +805,19 @@
             } catch (e) { console.warn(e); }
         }
 
+        function saveUserAccount() {
+            if (!soportaStorage() || !userAccount) return;
+            try { localStorage.setItem(STORAGE_KEYS.ACCOUNT, JSON.stringify(userAccount)); } catch (error) { console.warn('No fue posible guardar la cuenta', error); }
+        }
+
+        function loadUserAccount() {
+            if (!soportaStorage()) return;
+            try {
+                const stored = localStorage.getItem(STORAGE_KEYS.ACCOUNT);
+                if (stored) userAccount = JSON.parse(stored);
+            } catch (error) { console.warn('No fue posible cargar la cuenta', error); }
+        }
+
         function clearAllAnthrosData() {
             if (!soportaStorage()) return;
             Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
@@ -735,27 +874,8 @@
 
         function buscarProducto(query) {
             searchQuery = String(query || '').toLowerCase().trim();
-            const cards = document.querySelectorAll('.product-card');
-            let count = 0;
-            cards.forEach(card => {
-                const nombre = (card.querySelector('.product-name')?.textContent || '').toLowerCase();
-                const categoria = (card.dataset.category || '').toLowerCase();
-                const desc = (card.querySelector('.product-description')?.textContent || '').toLowerCase();
-                const show = !searchQuery
-                    || nombre.includes(searchQuery)
-                    || categoria.includes(searchQuery)
-                    || desc.includes(searchQuery);
-                if (show) {
-                    count++;
-                    card.style.display = '';
-                    setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'scale(1)'; }, 30);
-                } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.9) translateY(6px)';
-                    setTimeout(() => { card.style.display = 'none'; }, 280);
-                }
-            });
-            return count;
+            if (searchQuery.length > 1) recordRecommendationAction({ type: 'query', value: searchQuery });
+            return applyCatalogFilters();
         }
 
         function ordenarProductos(criterio = 'default') {
@@ -808,7 +928,7 @@
 
         function generarMensajeWhatsAppCarrito(numero = APP_CONFIG.WHATSAPP) {
             if (cart.length === 0) return showToast('Tu carrito está vacío', 'error');
-            const lines = [`Hola ANTHROS, quiero hacer este pedido:%0A%0A🛒 *Mi Pedido Anthros*%0A`];
+            const lines = [`Hola ANTHROS, quiero hacer este pedido:%0A%0A *Mi Pedido Anthros*%0A`];
             const desglose = calcularDesglosePedidoCompleto();
             cart.forEach((it, idx) => {
                 lines.push(
@@ -821,9 +941,9 @@
             lines.push(`%0ASubtotal (${desglose.totalQty} prod): ${formatPrice(desglose.subtotal)}`);
             if (desglose.promoDiscount > 0) lines.push(`%0ACódigo ${desglose.appliedPromoPct}% OFF: -${formatPrice(desglose.promoDiscount)}`);
             if (desglose.umbralDisc > 0) lines.push(`%0ABono > $100k: -${formatPrice(desglose.umbralDisc)}`);
-            lines.push(`%0AEnvío: ${desglose.shipping === 0 ? '🎉 GRATIS' : formatPrice(desglose.shipping)}`);
+            lines.push(`%0AEnvío: ${desglose.shipping === 0 ? ' GRATIS' : formatPrice(desglose.shipping)}`);
             lines.push(`%0A*TOTAL A PAGAR: ${formatPrice(desglose.total)}*`);
-            lines.push(`%0A%0A💚 Ahorro total: ${formatPrice(desglose.ahorro)}`);
+            lines.push(`%0A%0A Ahorro total: ${formatPrice(desglose.ahorro)}`);
             const url = `https://wa.me/${numero}?text=${lines.join('')}`;
             return url;
         }
@@ -838,7 +958,7 @@
         function compartirProducto(productId, red = 'wa') {
             const prod = PRODUCTS_DATA.find(p => p.id === productId);
             if (!prod) return;
-            const text = encodeURIComponent(`¡Mira esta prenda de ANTHROS! 🔥 ${prod.name} · ${formatPrice(prod.price)} · ${APP_CONFIG.DOMINIO}/#producto-${prod.id}`);
+            const text = encodeURIComponent(`¡Mira esta prenda de ANTHROS!  ${prod.name} · ${formatPrice(prod.price)} · ${APP_CONFIG.DOMINIO}/#producto-${prod.id}`);
             let url = '';
             if (red === 'wa') url = `https://wa.me/?text=${text}`;
             else if (red === 'fb') url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(APP_CONFIG.DOMINIO + '/#producto-' + prod.id)}&quote=${text}`;
@@ -867,7 +987,7 @@
         }
 
         function showFAQModal() {
-            const html = FAQ_DATA.map(f => `<div style="margin-bottom:14px;"><strong style="color:var(--red-primary);">❓ ${f.q}</strong><p style="color:var(--text-muted);margin-top:4px;">${f.a}</p></div>`).join('');
+            const html = FAQ_DATA.map(f => `<div style="margin-bottom:14px;"><strong style="color:var(--red-primary);"> ${f.q}</strong><p style="color:var(--text-muted);margin-top:4px;">${f.a}</p></div>`).join('');
             const modal = document.createElement('div');
             modal.id = 'faqModal';
             modal.setAttribute('role','dialog');
@@ -875,8 +995,8 @@
             modal.innerHTML = `
                 <div style="background:var(--cream-light);border-radius:var(--radius-lg);padding:28px;max-width:560px;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px var(--shadow-xl);width:100%;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                        <h3 style="font-family:var(--font-display);color:var(--red-deep);font-size:var(--fs-xl);">❓ Preguntas Frecuentes</h3>
-                        <button onclick="closeFAQModal()" aria-label="Cerrar FAQ" style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.05);font-size:1.3rem;cursor:pointer;">✕</button>
+                        <h3 style="font-family:var(--font-display);color:var(--red-deep);font-size:var(--fs-xl);"> Preguntas Frecuentes</h3>
+                        <button onclick="closeFAQModal()" aria-label="Cerrar FAQ" style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.05);font-size:1.3rem;cursor:pointer;"></button>
                     </div>
                     ${html}
                 </div>
@@ -903,7 +1023,7 @@
                 <div style="background:var(--cream-light);border-radius:var(--radius-lg);padding:26px;max-width:520px;width:100%;box-shadow:0 20px 60px var(--shadow-xl);">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
                         <h3 style="font-family:var(--font-display);color:var(--red-deep);font-size:var(--fs-lg);">${titulo}</h3>
-                        <button onclick="closeGenericModal()" style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.05);font-size:1.2rem;cursor:pointer;">✕</button>
+                        <button onclick="closeGenericModal()" style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.05);font-size:1.2rem;cursor:pointer;"></button>
                     </div>
                     <div>${contenidoHTML}</div>
                 </div>
@@ -934,15 +1054,16 @@
             const precioOriginal = prod.originalPrice
                 ? `<span class="product-price-original">${formatPrice(prod.originalPrice)}</span>` : '';
             return `
-                <article class="product-card reveal" data-category="${prod.category}" data-id="${prod.id}">
+                <article class="product-card reveal" data-category="${prod.category}" data-id="${prod.id}" data-price="${prod.price}" data-discount="${prod.discount || 0}" data-year="${prod.year || ''}" data-collection="${prod.collection || ''}" data-sizes="${(prod.sizes || []).join(',')}">
                     ${badge}
-                    <button class="product-fav" onclick="toggleFav(this)" aria-label="Añadir a favoritos">♡</button>
-                    <div class="product-image">
+                    <button class="product-fav" onclick="toggleFav(this)" aria-label="Añadir a favoritos"></button>
+                    <div class="product-image" onclick="goToProduct(${prod.id})" role="link" tabindex="0" onkeydown="if(event.key==='Enter')goToProduct(${prod.id})">
                         <img src="${prod.img}" alt="${prod.name}" loading="lazy">
+                        <button class="quick-view-btn" onclick="event.stopPropagation();goToProduct(${prod.id})" aria-label="Ver detalles de ${prod.name}">Ver producto </button>
                     </div>
                     <div class="product-info">
                         <div class="product-category">${prod.gender} · ${prod.line}</div>
-                        <h3 class="product-name">${prod.name}</h3>
+                        <h3 class="product-name" onclick="goToProduct(${prod.id})">${prod.name}</h3>
                         <p class="product-description">${prod.desc}</p>
                         <div class="product-size">${sizes}</div>
                         <div class="product-footer">
@@ -957,11 +1078,20 @@
             `;
         }
 
-        function renderProductsFromData() {
+        function renderProductsFromData(products = PRODUCTS_DATA) {
             const grid = document.getElementById('productsGrid');
             if (!grid) return;
-            grid.innerHTML = PRODUCTS_DATA.map(generateProductCardHTML).join('');
+            grid.innerHTML = products.map(generateProductCardHTML).join('');
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            sincronizarFavoritosUI();
+            renderRecommendations();
+        }
+
+        function goToProduct(productId) {
+            const product = PRODUCTS_DATA.find(item => item.id === Number(productId));
+            if (!product) return showToast('Producto no encontrado', 'error');
+            recordRecommendationAction({ type: 'view', productId: product.id });
+            window.location.href = `./producto.html?id=${product.id}`;
         }
 
         /* =========================================================
@@ -973,7 +1103,7 @@
         window.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                const inp = prompt('🔎 Buscar productos en ANTHROS:');
+                const inp = prompt(' Buscar productos en ANTHROS:');
                 if (inp !== null) {
                     const encontrados = buscarProducto(inp);
                     showToast(`${encontrados} producto(s) encontrado(s)`, encontrados ? 'success' : 'info');
@@ -984,6 +1114,7 @@
         (function inicializarModulosNuevos() {
             if (!soportaStorage()) return;
             loadUserPrefs();
+            loadUserAccount();
             loadCart();
             loadFavorites();
             try {
@@ -1023,10 +1154,57 @@
         let _searchDebounceTimer = null;
         let _currentViewMode = 'grid';
         let _currentPriceMax = 500000;
+        const _catalogFilters = { category: 'all', year: 'all', collection: 'all', size: 'all', offers: false };
         let _testimonialIndex = 0;
         let _testimonialAutoTimer = null;
+        let _heroIndex = 0;
+        let _heroTimer = null;
         let _countdownTarget = null;
         let _quickViewData = { productId: null, qty: 1, size: null };
+        let _emptyCartSlide = 0;
+        let _emptyCartTimer = null;
+
+        const HERO_SLIDES = Object.freeze([
+            { image: './images (2).jpg', label: 'Anthros / 01' },
+            { image: './Organic-Linen-Shirts-Men-Long-Sleeve-Shirts-for-Men-Eco-Friendly-Camisas-Sustainable-Men-Linen-Shirt-Men-s-Shirts.avif', label: 'Anthros / 02' },
+            { image: './camiseta-mujer-manga-larga-de-algodon-ecologico.jpg.webp', label: 'Anthros / 03' }
+        ]);
+
+        function renderHeroSlide() {
+            const hero = document.querySelector('.hero-carousel-shell');
+            const dots = document.getElementById('heroCarouselDots');
+            if (!hero || !dots) return;
+            const slide = HERO_SLIDES[_heroIndex];
+            hero.classList.remove('hero-slide-enter');
+            void hero.offsetWidth;
+            hero.classList.add('hero-slide-enter');
+            hero.style.backgroundImage = `linear-gradient(90deg, rgba(28, 8, 10, 0.84) 0%, rgba(55, 6, 23, 0.62) 46%, rgba(55, 6, 23, 0.16) 100%), url("${slide.image}")`;
+            dots.innerHTML = HERO_SLIDES.map((item, index) => `<button type="button" class="hero-carousel-dot ${index === _heroIndex ? 'active' : ''}" onclick="setHeroSlide(${index})" aria-label="Ir a ${item.label}"></button>`).join('');
+        }
+
+        function setHeroSlide(index) {
+            _heroIndex = (index + HERO_SLIDES.length) % HERO_SLIDES.length;
+            renderHeroSlide();
+        }
+
+        function changeHeroSlide(direction) {
+            setHeroSlide(_heroIndex + direction);
+            restartHeroTimer();
+        }
+
+        function restartHeroTimer() {
+            clearInterval(_heroTimer);
+            _heroTimer = setInterval(() => setHeroSlide(_heroIndex + 1), 4000);
+        }
+
+        function initHeroCarousel() {
+            const hero = document.querySelector('.hero-carousel-shell');
+            if (!hero) return;
+            renderHeroSlide();
+            restartHeroTimer();
+            hero.addEventListener('mouseenter', () => clearInterval(_heroTimer));
+            hero.addEventListener('mouseleave', restartHeroTimer);
+        }
 
         /* 1) NAVIGATE MPA (navegación real entre páginas) */
         function navigateTo(section, anchorId = null) {
@@ -1035,6 +1213,7 @@
                 productos: 'catalogo.html',
                 catalogo: 'catalogo.html',
                 coleccion: 'catalogo.html',
+                nosotros: 'nosotros.html',
                 cart: 'carrito.html',
                 carrito: 'carrito.html',
                 checkout: 'carrito.html',
@@ -1042,7 +1221,6 @@
                 favoritos: 'favoritos.html',
                 orders: 'pedidos.html',
                 pedidos: 'pedidos.html',
-                nosotros: 'index.html#nosotros',
                 howtobuy: 'index.html#howtobuy',
                 contacto: 'index.html#contacto'
             };
@@ -1064,10 +1242,10 @@
             const root = document.documentElement;
             const btn = document.getElementById('themeToggle');
             const isDark = root.classList.toggle('theme-dark');
-            if (btn) btn.textContent = isDark ? '🌙' : '☀️';
+            if (btn) btn.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
             userPreferences.theme = isDark ? 'dark' : 'warm';
             saveUserPrefs();
-            showToast(isDark ? '🌙 Tema oscuro activado' : '☀️ Tema cálido activado', 'info');
+            showToast(isDark ? ' Tema oscuro activado' : ' Tema cálido activado', 'info');
         }
 
         /* 3) SCROLL PROGRESS BAR */
@@ -1090,7 +1268,7 @@
                 const label = document.getElementById('searchResultsCount');
                 if (label) {
                     label.style.display = value ? 'block' : 'none';
-                    label.textContent = count ? `✅ ${count} producto(s) encontrado(s)` : `❌ No se encontraron productos para "${value}"`;
+                    label.textContent = count ? ` ${count} producto(s) encontrado(s)` : ` No se encontraron productos para "${value}"`;
                     label.style.color = count ? 'var(--success)' : 'var(--red-primary)';
                 }
             }, 280);
@@ -1099,7 +1277,7 @@
             const input = document.getElementById('searchInput');
             if (!input) return;
             onSearchInput(input.value);
-            showToast('Búsqueda ejecutada 🔍', 'info');
+            showToast('Búsqueda ejecutada ', 'info');
         }
 
         /* 5) SORT PRODUCTOS (wrapper para <select>) */
@@ -1123,11 +1301,24 @@
             _currentPriceMax = Number(value) || 500000;
             const label = document.getElementById('priceRangeLabel');
             if (label) label.textContent = formatearNumero(_currentPriceMax);
+            return applyCatalogFilters();
+        }
+
+        function applyCatalogFilters() {
             const cards = document.querySelectorAll('.product-card');
             let countVisible = 0;
             cards.forEach(card => {
                 const precio = Number(card.dataset.price || 0);
-                const show = precio <= _currentPriceMax;
+                const nombre = (card.querySelector('.product-name')?.textContent || '').toLowerCase();
+                const categoria = (card.dataset.category || '').toLowerCase();
+                const descripcion = (card.querySelector('.product-description')?.textContent || '').toLowerCase();
+                const matchesSearch = !searchQuery || nombre.includes(searchQuery) || categoria.includes(searchQuery) || descripcion.includes(searchQuery);
+                const matchesCategory = _catalogFilters.category === 'all' || categoria.includes(_catalogFilters.category);
+                const matchesYear = _catalogFilters.year === 'all' || card.dataset.year === _catalogFilters.year;
+                const matchesCollection = _catalogFilters.collection === 'all' || card.dataset.collection === _catalogFilters.collection;
+                const matchesSize = _catalogFilters.size === 'all' || (card.dataset.sizes || '').split(',').includes(_catalogFilters.size);
+                const matchesOffers = !_catalogFilters.offers || Number(card.dataset.discount || 0) > 0 || card.querySelector('.product-badge.discount');
+                const show = matchesSearch && matchesCategory && matchesYear && matchesCollection && matchesSize && matchesOffers && precio <= _currentPriceMax;
                 if (show) {
                     countVisible++;
                     card.style.display = '';
@@ -1138,6 +1329,31 @@
                     setTimeout(() => { card.style.display = 'none'; }, 260);
                 }
             });
+            const resultLabel = document.getElementById('searchResultsCount');
+            if (resultLabel && (searchQuery || _catalogFilters.category !== 'all' || _catalogFilters.year !== 'all' || _catalogFilters.collection !== 'all' || _catalogFilters.size !== 'all' || _catalogFilters.offers || _currentPriceMax < 500000)) {
+                resultLabel.style.display = 'block';
+                resultLabel.textContent = `${countVisible} producto(s) coinciden con tus filtros`;
+                resultLabel.style.color = countVisible ? 'var(--success)' : 'var(--red-primary)';
+            }
+            return countVisible;
+        }
+
+        function updateAdvancedFilter(name, value) {
+            if (name === 'offers') _catalogFilters.offers = Boolean(value);
+            else _catalogFilters[name] = value || 'all';
+            applyCatalogFilters();
+        }
+
+        function clearCatalogFilters() {
+            Object.assign(_catalogFilters, { category: 'all', year: 'all', collection: 'all', size: 'all', offers: false });
+            _currentPriceMax = 500000;
+            ['catalogYear', 'catalogCollection', 'catalogSize'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 'all'; });
+            const range = document.getElementById('priceRangeFilter');
+            if (range) range.value = '500000';
+            const offers = document.getElementById('offersOnly');
+            if (offers) offers.checked = false;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === 'all'));
+            applyCatalogFilters();
         }
 
         /* 8) MODAL GUÍA DE TALLAS */
@@ -1150,8 +1366,8 @@
                 modal.addEventListener('click', e => { if (e.target === modal) closeSizeGuideModal(); });
                 modal.innerHTML = `
                     <div class="size-guide-panel">
-                        <button class="sg-close" onclick="closeSizeGuideModal()" aria-label="Cerrar guía de tallas">✕</button>
-                        <h3>📏 Guía de Tallas ANTHROS</h3>
+                        <button class="sg-close" onclick="closeSizeGuideModal()" aria-label="Cerrar guía de tallas"></button>
+                        <h3> Guía de Tallas ANTHROS</h3>
                         <p style="color:var(--text-muted);font-size:var(--fs-sm);margin-bottom:var(--space-4);line-height:1.7;">
                             Para elegir tu talla correcta, toma tus medidas y compáralas con la tabla. Si estás entre 2 tallas, elige la mayor.
                         </p>
@@ -1173,11 +1389,11 @@
                             </table>
                         </div>
                         <div class="size-guide-note">
-                            💡 <strong>Consejo:</strong> La medida más importante para prendas superiores es el <strong>pecho</strong>. Si tus medidas son mixtas, prioriza tu talla de pecho. Para una prenda más ajustada usa tu medida exacta, para un fit relajado suma 2-4 cm.
+                             <strong>Consejo:</strong> La medida más importante para prendas superiores es el <strong>pecho</strong>. Si tus medidas son mixtas, prioriza tu talla de pecho. Para una prenda más ajustada usa tu medida exacta, para un fit relajado suma 2-4 cm.
                         </div>
                         <div style="margin-top:var(--space-4);display:flex;gap:var(--space-3);flex-wrap:wrap;">
-                            <button class="qv-btn-primary" style="flex:1;min-width:180px;" onclick="closeSizeGuideModal()">Entendido ✓</button>
-                            <button class="qv-btn-secondary" onclick="closeSizeGuideModal();navigateTo('home','productos');">Ver Productos →</button>
+                            <button class="qv-btn-primary" style="flex:1;min-width:180px;" onclick="closeSizeGuideModal()">Entendido </button>
+                            <button class="qv-btn-secondary" onclick="closeSizeGuideModal();navigateTo('home','productos');">Ver Productos </button>
                         </div>
                     </div>
                 `;
@@ -1197,6 +1413,7 @@
         function openQuickView(productId) {
             const prod = PRODUCTS_DATA.find(p => p.id === Number(productId));
             if (!prod) return showToast('Producto no encontrado', 'error');
+            recordRecommendationAction({ type: 'view', productId: prod.id });
             _quickViewData = { productId: prod.id, qty: 1, size: prod.sizes?.[1] || 'M' };
             let modal = document.getElementById('quickViewModal');
             if (!modal) {
@@ -1206,7 +1423,7 @@
                 modal.addEventListener('click', e => { if (e.target === modal) closeQuickView(); });
                 document.body.appendChild(modal);
             }
-            const starsHtml = '★'.repeat(prod.rating || 0) + '☆'.repeat(5 - (prod.rating || 0));
+            const starsHtml = `Calificación ${prod.rating || 0}/5`;
             const sizesHtml = (prod.sizes || ['S','M','L']).map((s, idx) =>
                 `<div class="size-option ${s === _quickViewData.size ? 'selected' : ''}" onclick="qvSelectSize('${s}', this)">${s}</div>`
             ).join('');
@@ -1216,7 +1433,7 @@
                 : '';
             modal.innerHTML = `
                 <div class="quick-view-panel">
-                    <button class="qv-close" onclick="closeQuickView()" aria-label="Cerrar vista rápida">✕</button>
+                    <button class="qv-close" onclick="closeQuickView()" aria-label="Cerrar vista rápida"></button>
                     <div class="qv-image-wrap"><img src="${prod.img}" alt="${prod.name}" loading="lazy"></div>
                     <div class="qv-info">
                         <div class="qv-cat">${prod.gender} · ${prod.line}${prod.isNew ? ' · <span style=\\"color:var(--red-primary);\\">NUEVO</span>' : ''}</div>
@@ -1230,28 +1447,34 @@
                             ${priceOrigHtml}
                         </div>
                         <p class="qv-desc">${prod.desc}</p>
+                        <div class="qv-product-facts">
+                            <div><span>Material</span><strong>${prod.material || 'Textil seleccionado Anthros'}</strong></div>
+                            <div><span>Colores</span><strong>${(prod.colors || []).join(' · ') || 'Consulta disponibilidad'}</strong></div>
+                            <div><span>Envío estimado</span><strong>${prod.shipping || '3-5 días hábiles'}</strong></div>
+                            <div><span>Cuidado</span><strong>${prod.care || 'Seguir instrucciones de la etiqueta'}</strong></div>
+                        </div>
                         <div>
-                            <div class="qv-size-title">📏 Elige tu talla</div>
+                            <div class="qv-size-title"> Elige tu talla</div>
                             <div class="qv-sizes">${sizesHtml}</div>
-                            <button class="qv-btn-secondary" style="margin-top:var(--space-2);padding:8px 14px;font-size:var(--fs-xs);" onclick="showSizeGuideModal()">📏 Ver guía de tallas</button>
+                            <button class="qv-btn-secondary" style="margin-top:var(--space-2);padding:8px 14px;font-size:var(--fs-xs);" onclick="showSizeGuideModal()"> Ver guía de tallas</button>
                         </div>
                         <div class="qv-qty-row">
                             <div><span class="qv-size-title">Cantidad</span></div>
                             <div class="qv-qty">
-                                <button class="qv-qty-btn" onclick="qvChangeQty(-1)" aria-label="Restar">−</button>
+                                <button class="qv-qty-btn" onclick="qvChangeQty(-1)" aria-label="Restar"></button>
                                 <span class="qv-qty-val" id="qvQtyVal">1</span>
                                 <button class="qv-qty-btn" onclick="qvChangeQty(1)" aria-label="Sumar">+</button>
                             </div>
                         </div>
                         <div class="qv-actions">
-                            <button class="qv-btn-primary" onclick="qvAddToCart()">🛒 Añadir al carrito</button>
-                            <button class="qv-btn-secondary" onclick="toggleQuickViewFav()" title="Favorito" aria-label="Añadir favorito">${esFavorito(prod.id) ? '♥' : '♡'}</button>
+                            <button class="qv-btn-primary" onclick="qvAddToCart()"> Añadir al carrito</button>
+                            <button class="qv-btn-secondary" onclick="toggleQuickViewFav()" title="Favorito" aria-label="Añadir favorito">${esFavorito(prod.id) ? '' : ''}</button>
                         </div>
                         <div class="qv-share-row">
                             <span>Compartir:</span>
-                            <button class="qv-share-btn" title="WhatsApp" onclick="compartirProducto(${prod.id},'wa')">💚</button>
-                            <button class="qv-share-btn" title="Facebook" onclick="compartirProducto(${prod.id},'fb')">📘</button>
-                            <button class="qv-share-btn" title="Copiar enlace" onclick="compartirProducto(${prod.id},'copy')">🔗</button>
+                            <button class="qv-share-btn" title="WhatsApp" onclick="compartirProducto(${prod.id},'wa')">WhatsApp</button>
+                            <button class="qv-share-btn" title="Facebook" onclick="compartirProducto(${prod.id},'fb')">Facebook</button>
+                            <button class="qv-share-btn" title="Copiar enlace" onclick="compartirProducto(${prod.id},'copy')">Copiar</button>
                         </div>
                     </div>
                 </div>
@@ -1287,7 +1510,7 @@
                     _forcedSize: _quickViewData.size
                 });
             }
-            showToast(`✓ ${_quickViewData.qty} × ${prod.name} (${_quickViewData.size}) añadido(s) al carrito`, 'success');
+            showToast(` ${_quickViewData.qty} × ${prod.name} (${_quickViewData.size}) añadido(s) al carrito`, 'success');
             setTimeout(closeQuickView, 400);
         }
         function toggleQuickViewFav() {
@@ -1302,8 +1525,215 @@
             sincronizarFavoritosUI();
             updateFavoritesCount();
             const prod = PRODUCTS_DATA.find(p => p.id === id);
-            showToast(esFavorito(id) ? `♥ ${prod?.name} en favoritos` : `♡ Eliminado de favoritos`, 'info');
+            showToast(esFavorito(id) ? ` ${prod?.name} en favoritos` : ` Eliminado de favoritos`, 'info');
             openQuickView(id);
+        }
+
+        function recordRecommendationAction(action) {
+            if (!soportaStorage()) return;
+            try {
+                const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.RECOMMENDATIONS) || '{"views":{},"carts":{},"queries":{}}');
+                if (action.type === 'view') history.views[action.productId] = (history.views[action.productId] || 0) + 1;
+                if (action.type === 'cart') history.carts[action.productId] = (history.carts[action.productId] || 0) + 1;
+                if (action.type === 'query' && action.value) history.queries[action.value] = (history.queries[action.value] || 0) + 1;
+                localStorage.setItem(STORAGE_KEYS.RECOMMENDATIONS, JSON.stringify(history));
+            } catch (error) { console.warn('No se pudo actualizar el historial de recomendaciones', error); }
+        }
+
+        function getRecommendationHistory() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.RECOMMENDATIONS) || '{"views":{},"carts":{},"queries":{}}'); }
+            catch { return { views: {}, carts: {}, queries: {} }; }
+        }
+
+        function normalizeRecommendationText(value) {
+            return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function getRecommendedProducts(limit = 4) {
+            const history = getRecommendationHistory();
+            const viewedIds = Object.keys(history.views).map(Number);
+            const viewedProducts = PRODUCTS_DATA.filter(product => viewedIds.includes(product.id));
+            const queryText = Object.keys(history.queries).join(' ').toLowerCase();
+            const anchor = viewedProducts[viewedProducts.length - 1];
+            return [...PRODUCTS_DATA].sort((a, b) => {
+                const score = product => {
+                    let points = Number(history.views[product.id] || 0) * 5;
+                    points += Number(history.carts?.[product.id] || 0) * 9;
+                    if (anchor && product.collection === anchor.collection) points += 7;
+                    if (anchor && product.material && anchor.material && product.material.split(' ').some(word => word.length > 4 && anchor.material.includes(word))) points += 5;
+                    if (queryText && `${product.name} ${product.material} ${product.collection} ${product.category}`.toLowerCase().split(' ').some(word => queryText.includes(word) && word.length > 3)) points += 4;
+                    if (userAccount?.preferences?.collection && product.collection === userAccount.preferences.collection) points += 5;
+                    if (userAccount?.preferences?.gender && product.gender.toLowerCase() === userAccount.preferences.gender) points += 3;
+                    if (userAccount?.preferences?.materials?.some(material => normalizeRecommendationText(product.material).includes(normalizeRecommendationText(material)))) points += 6;
+                    if (userAccount?.preferences?.size && product.sizes.includes(userAccount.preferences.size)) points += 2;
+                    if (userAccount?.preferences?.style && normalizeRecommendationText(product.line).includes(normalizeRecommendationText(userAccount.preferences.style))) points += 2;
+                    if (product.isNew) points += 1;
+                    return points;
+                };
+                return score(b) - score(a);
+            }).filter(product => !anchor || product.id !== anchor.id).slice(0, limit);
+        }
+
+        function renderRecommendations() {
+            const container = document.getElementById('recommendationsPanel');
+            if (!container) return;
+            const recommendations = getRecommendedProducts();
+            container.innerHTML = recommendations.map(product => `<article class="recommendation-card" onclick="goToProduct(${product.id})" tabindex="0" role="link"><div class="recommendation-image"><img src="${product.img}" alt="${product.name}" loading="lazy"></div><div><span>${product.collection} · ${product.material}</span><h3>${product.name}</h3><strong>${formatPrice(product.price)}</strong></div></article>`).join('');
+        }
+
+        let productPageQuantity = 1;
+
+        function getProductFromUrl() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            return PRODUCTS_DATA.find(product => product.id === Number(id));
+        }
+
+        function initProductPage() {
+            const detail = document.getElementById('productDetail');
+            if (!detail) return;
+            const product = getProductFromUrl();
+            if (!product) {
+                detail.innerHTML = '<section class="product-not-found"><span class="section-eyebrow">404 / Producto</span><h1>No encontramos esta pieza.</h1><p>Puede que haya cambiado de colección.</p><a class="checkout-submit" href="./catalogo.html">Volver al catálogo </a></section>';
+                return;
+            }
+            recordRecommendationAction({ type: 'view', productId: product.id });
+            productPageQuantity = 1;
+            document.title = `${product.name} | Anthros`;
+            const originalPrice = product.originalPrice ? `<span class="product-detail-original">${formatPrice(product.originalPrice)}</span><span class="product-detail-discount">-${product.discount}%</span>` : '';
+            const sizes = (product.sizes || ['S', 'M', 'L']).map((size, index) => `<button type="button" class="detail-size ${index === 1 ? 'selected' : ''}" onclick="selectProductSize(this)">${size}</button>`).join('');
+            detail.innerHTML = `
+                <nav class="product-breadcrumb" aria-label="Migas de pan"><a href="./index.html">Inicio</a><span>/</span><a href="./catalogo.html">Colección</a><span>/</span><strong>${product.name}</strong></nav>
+                <section class="product-detail-shell">
+                    <div class="product-detail-visual"><span class="product-detail-collection">${product.collection} / ${product.year}</span><img src="${product.img}" alt="${product.name}" fetchpriority="high"><span class="product-detail-index">0${product.id}  ${product.line}</span></div>
+                    <div class="product-detail-copy"><p class="product-detail-category">${product.gender} · ${product.line}${product.isNew ? ' · NUEVO' : ''}</p><h1>${product.name}</h1><div class="product-detail-rating"><span>${''.repeat(product.rating)}${''.repeat(5 - product.rating)}</span><small>${product.reviews} reseñas verificadas</small></div><p class="product-detail-description">${product.desc}</p>
+                        <div class="product-detail-price"><strong>${formatPrice(product.price)}</strong>${originalPrice}</div>
+                        <div class="product-detail-data"><div><span>Material</span><strong>${product.material}</strong></div><div><span>Color disponible</span><strong>${product.colors.join(' · ')}</strong></div><div><span>Envío</span><strong>${product.shipping}</strong></div><div><span>Cuidado</span><strong>${product.care}</strong></div></div>
+                        <div class="detail-choice"><span>Talla</span><div class="detail-sizes">${sizes}</div></div>
+                        <div class="detail-buy-row"><div class="detail-quantity"><button type="button" onclick="changeProductQuantity(-1)" aria-label="Restar cantidad"></button><strong id="productQuantity">1</strong><button type="button" onclick="changeProductQuantity(1)" aria-label="Sumar cantidad">+</button></div><button type="button" class="detail-add-button" onclick="addProductFromPage(${product.id})">Añadir al carrito <span></span></button></div>
+                        <div class="detail-service"><span></span><p><strong>Compra con calma.</strong><br>14 días para cambios y devoluciones. Revisa nuestra <a href="./garantias.html">política de garantías</a>.</p></div>
+                    </div>
+                </section>`;
+            renderProductRecommendations(product.id);
+        }
+
+        function selectProductSize(button) {
+            button.parentElement.querySelectorAll('.detail-size').forEach(size => size.classList.remove('selected'));
+            button.classList.add('selected');
+        }
+
+        function changeProductQuantity(delta) {
+            productPageQuantity = Math.max(1, productPageQuantity + delta);
+            const output = document.getElementById('productQuantity');
+            if (output) output.textContent = productPageQuantity;
+        }
+
+        function addProductFromPage(productId) {
+            const product = PRODUCTS_DATA.find(item => item.id === Number(productId));
+            const selectedSize = document.querySelector('.detail-size.selected')?.textContent.trim() || product?.sizes?.[1] || 'M';
+            if (!product) return;
+            for (let index = 0; index < productPageQuantity; index++) addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, category: product.gender, originalPrice: product.originalPrice || undefined, _forcedSize: selectedSize });
+            showToast(`${productPageQuantity} × ${product.name} añadido al carrito`, 'success');
+        }
+
+        function renderProductRecommendations(currentId) {
+            const rail = document.getElementById('productRecommendations');
+            if (!rail) return;
+            const products = getRecommendedProducts(5).filter(product => product.id !== Number(currentId));
+            rail.innerHTML = products.map(product => `<article class="product-rail-card" onclick="goToProduct(${product.id})" tabindex="0" role="link"><div class="product-rail-image"><img src="${product.img}" alt="${product.name}" loading="lazy"><span>${product.collection}</span></div><div class="product-rail-copy"><small>${product.material}</small><h3>${product.name}</h3><strong>${formatPrice(product.price)}</strong></div></article>`).join('');
+        }
+
+        function chooseAccountMethod(method) {
+            const accountMethod = document.getElementById('accountMethod');
+            const emailField = document.getElementById('accountEmailField');
+            const phoneField = document.getElementById('accountPhoneField');
+            if (!accountMethod || !emailField || !phoneField) return;
+            accountMethod.value = method;
+            emailField.hidden = method !== 'google';
+            phoneField.hidden = method !== 'phone';
+            document.getElementById('accountEmail').required = method === 'google';
+            document.getElementById('accountPhone').required = method === 'phone';
+            document.querySelectorAll('.account-method').forEach(button => button.classList.toggle('active', button.dataset.method === method));
+        }
+
+        function initAccountPage() {
+            loadUserAccount();
+            if (userAccount) showAccountSettings();
+            chooseAccountMethod(document.getElementById('accountMethod')?.value || 'google');
+        }
+
+        function saveAccount(event) {
+            event.preventDefault();
+            const method = document.getElementById('accountMethod')?.value || 'google';
+            const name = document.getElementById('accountName')?.value.trim();
+            const email = document.getElementById('accountEmail')?.value.trim().toLowerCase();
+            const phone = document.getElementById('accountPhone')?.value.trim();
+            if (!name || (method === 'google' && !validateEmail(email)) || (method === 'phone' && !/^\+?[0-9\s()-]{7,}$/.test(phone))) {
+                showToast('Revisa los datos de tu cuenta', 'error');
+                return;
+            }
+            userAccount = { name, email: method === 'google' ? email : '', phone: method === 'phone' ? phone : '', provider: method, createdAt: userAccount?.createdAt || new Date().toISOString(), preferences: userAccount?.preferences || {} };
+            saveUserAccount();
+            showAccountSettings();
+            showToast(method === 'google' ? 'Cuenta de Google vinculada localmente' : 'Cuenta creada con tu teléfono', 'success');
+        }
+
+        function showAccountSettings() {
+            const accountCard = document.getElementById('accountCard');
+            const settings = document.getElementById('accountSettings');
+            if (accountCard) accountCard.classList.add('account-card-saved');
+            if (settings) settings.hidden = false;
+            const nameInput = document.getElementById('accountName');
+            if (nameInput && userAccount) nameInput.value = userAccount.name || '';
+            const preferences = userAccount?.preferences || {};
+            ['profileCity', 'profileAge', 'profileGender', 'profileSize', 'profileStyle', 'profileFrequency'].forEach(id => { const field = document.getElementById(id); const key = id.replace('profile', '').toLowerCase(); if (field && preferences[key]) field.value = preferences[key]; });
+            document.querySelectorAll('#materialChoices input').forEach(input => { input.checked = (preferences.materials || []).includes(input.value); });
+        }
+
+        function saveAccountPreferences(event) {
+            event.preventDefault();
+            if (!userAccount) return showToast('Primero crea tu cuenta', 'error');
+            const materials = Array.from(document.querySelectorAll('#materialChoices input:checked')).slice(0, 3).map(input => input.value);
+            userAccount.preferences = { city: document.getElementById('profileCity')?.value || '', age: document.getElementById('profileAge')?.value || '', gender: document.getElementById('profileGender')?.value || 'unisex', size: document.getElementById('profileSize')?.value || '', materials, style: document.getElementById('profileStyle')?.value || 'atemporal', frequency: document.getElementById('profileFrequency')?.value || 'ocasional' };
+            saveUserAccount();
+            showToast('Preferencias guardadas. Ajustamos tus recomendaciones', 'success');
+        }
+
+        function resetAccount() {
+            userAccount = null;
+            if (soportaStorage()) localStorage.removeItem(STORAGE_KEYS.ACCOUNT);
+            window.location.reload();
+        }
+
+        function getEmptyCartProducts() {
+            const offers = PRODUCTS_DATA.filter(product => product.discount > 0).sort((a, b) => b.discount - a.discount);
+            const bestSellers = PRODUCTS_DATA.filter(product => !offers.includes(product)).sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+            return [...offers, ...bestSellers].slice(0, 6);
+        }
+
+        function renderEmptyCartCarousel() {
+            const carousel = document.getElementById('emptyCartRecommendations');
+            if (!carousel) return;
+            const products = getEmptyCartProducts();
+            if (!products.length) return;
+            const product = products[_emptyCartSlide % products.length];
+            const label = product.discount > 0 ? `Oferta / ${product.discount}% menos` : `Más vendido / ${product.reviews} reseñas`;
+            carousel.innerHTML = `<div class="empty-cart-carousel-heading"><span class="section-eyebrow">Una pista para empezar</span><h2 id="emptyCartCarouselTitle">Descubre algo que pueda gustarte</h2></div><article class="empty-cart-slide"><div class="empty-cart-slide-image"><img src="${product.img}" alt="${product.name}"><span>${label}</span></div><div class="empty-cart-slide-copy"><small>${product.collection} · ${product.material}</small><h3>${product.name}</h3><p>${product.desc}</p><div><strong>${formatPrice(product.price)}</strong>${product.originalPrice ? `<del>${formatPrice(product.originalPrice)}</del>` : ''}</div><button type="button" class="qv-btn-primary" onclick="goToProduct(${product.id})">Ver producto </button></div></article><div class="empty-cart-carousel-controls"><button type="button" onclick="changeEmptyCartSlide(-1)" aria-label="Recomendación anterior"></button><span>${String((_emptyCartSlide % products.length) + 1).padStart(2, '0')} / ${String(products.length).padStart(2, '0')}</span><button type="button" onclick="changeEmptyCartSlide(1)" aria-label="Siguiente recomendación"></button></div>`;
+            restartEmptyCartCarousel(products.length);
+        }
+
+        function changeEmptyCartSlide(direction) {
+            const products = getEmptyCartProducts();
+            if (!products.length) return;
+            _emptyCartSlide = (_emptyCartSlide + direction + products.length) % products.length;
+            renderEmptyCartCarousel();
+        }
+
+        function restartEmptyCartCarousel(totalSlides) {
+            clearInterval(_emptyCartTimer);
+            _emptyCartTimer = setInterval(() => {
+                _emptyCartSlide = (_emptyCartSlide + 1) % totalSlides;
+                renderEmptyCartCarousel();
+            }, 3000);
         }
 
         /* 10) COUNTDOWN TIMER OFERTA */
@@ -1396,11 +1826,11 @@
             if (favorites.length === 0) {
                 wrap.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">♥</div>
+                        <div class="empty-state-icon"></div>
                         <h3>Aún no tienes favoritos</h3>
                         <p>Explora nuestra colección y guarda tus prendas preferidas para después.</p>
                         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                            <button class="qv-btn-primary" style="min-width:200px;" onclick="navigateTo('home','productos')">🛍️ Explorar Colección</button>
+                            <button class="qv-btn-primary" style="min-width:200px;" onclick="navigateTo('home','productos')"> Explorar Colección</button>
                             <button class="qv-btn-secondary" style="min-width:200px;" onclick="navigateTo('home','howtobuy')">¿Cómo comprar?</button>
                         </div>
                     </div>`;
@@ -1414,12 +1844,12 @@
                         const badge = prod.badge ? `<span class="product-badge ${prod.badge.includes('%') ? 'discount' : ''}">${prod.badge}</span>` : '';
                         const origHtml = prod.originalPrice ? `<span class="product-price-original">${formatPrice(prod.originalPrice)}</span>` : '';
                         const sizesHtml = (prod.sizes || ['S','M','L']).map(s => `<div class="size-option" onclick="selectSize(this)">${s}</div>`).join('');
-                        const stars = '★'.repeat(prod.rating || 0) + '☆'.repeat(5 - (prod.rating || 0));
+                        const stars = `Calificación ${prod.rating || 0}/5`;
                         return `
                         <article class="product-card reveal visible" data-category="${prod.category}" data-id="${prod.id}" data-price="${prod.price}" data-discount="${prod.discount}" data-isnew="${prod.isNew}">
                             ${badge}
-                            <button class="product-fav active" onclick="removeFromFavSpa(${prod.id})" aria-label="Quitar de favoritos">♥</button>
-                            <button class="quick-view-btn" style="opacity:1;transform:translateY(0);" onclick="openQuickView(${prod.id})">👁️ Ver</button>
+                            <button class="product-fav active" onclick="removeFromFavSpa(${prod.id})" aria-label="Quitar de favoritos"></button>
+                            <button class="quick-view-btn" style="opacity:1;transform:translateY(0);" onclick="goToProduct(${prod.id})">Ver producto </button>
                             <div class="product-image"><img src="${prod.img}" alt="${prod.name}" loading="lazy"></div>
                             <div class="product-info">
                                 <div class="product-category">${prod.gender} · ${prod.line}</div>
@@ -1443,7 +1873,7 @@
             saveFavorites();
             sincronizarFavoritosUI();
             const p = PRODUCTS_DATA.find(x => x.id === id);
-            showToast(`♡ ${p?.name || 'Producto'} eliminado de favoritos`, 'info');
+            showToast(` ${p?.name || 'Producto'} eliminado de favoritos`, 'info');
             renderFavoritesSPA();
         }
 
@@ -1455,12 +1885,12 @@
             if (history.length === 0) {
                 wrap.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
+                        <div class="empty-state-icon"></div>
                         <h3>No tienes pedidos aún</h3>
                         <p>Tu historial de compras aparecerá aquí. ¡Anímate a hacer tu primera compra Anthros!</p>
                         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                            <button class="qv-btn-primary" style="min-width:200px;" onclick="navigateTo('home','productos')">🛍️ Ver Productos</button>
-                            <button class="qv-btn-secondary" style="min-width:200px;" onclick="showFAQModal()">❓ Ayuda</button>
+                            <button class="qv-btn-primary" style="min-width:200px;" onclick="navigateTo('home','productos')"> Ver Productos</button>
+                            <button class="qv-btn-secondary" style="min-width:200px;" onclick="showFAQModal()"> Ayuda</button>
                         </div>
                     </div>`;
                 return;
@@ -1481,15 +1911,15 @@
                         <div class="history-item" onclick="showOrderDetail('${o.id}')">
                             <div class="history-header">
                                 <span class="history-id">#${o.id.slice(-8)}</span>
-                                <span class="history-date">📅 ${fmtDate(o.fecha)}</span>
+                                <span class="history-date"> ${fmtDate(o.fecha)}</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-3);flex-wrap:wrap;">
                                 <div style="flex:1;">
                                     <div class="history-items-preview">${chips}${extra}</div>
                                     <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
                                         <span class="history-chip" style="background:rgba(230,57,70,0.08);color:var(--red-primary);">${o.items?.length || 0} artículo(s)</span>
-                                        ${o.appliedPromo ? `<span class="history-chip" style="background:rgba(120,0,0,0.1);color:var(--red-deep);">🎁 Promo ${o.appliedPromo}% OFF</span>` : ''}
-                                        ${o.desglose?.envioGratisAplicado || o.desglose?.envio === 0 ? `<span class="history-chip" style="background:rgba(34,197,94,0.12);color:var(--success);">🚚 Envío Gratis</span>` : ''}
+                                        ${o.appliedPromo ? `<span class="history-chip" style="background:rgba(120,0,0,0.1);color:var(--red-deep);"> Promo ${o.appliedPromo}% OFF</span>` : ''}
+                                        ${o.desglose?.envioGratisAplicado || o.desglose?.envio === 0 ? `<span class="history-chip" style="background:rgba(34,197,94,0.12);color:var(--success);"> Envío Gratis</span>` : ''}
                                     </div>
                                 </div>
                                 <span class="history-total">${formatPrice(o.total || 0)}</span>
@@ -1507,25 +1937,25 @@
                     <div style="width:54px;height:54px;border-radius:var(--radius-sm);overflow:hidden;background:#fff;flex-shrink:0;"><img src="${it.img}" style="width:100%;height:100%;object-fit:cover;" alt=""></div>
                     <div style="flex:1;min-width:0;">
                         <div style="font-weight:700;color:var(--red-deep);font-size:var(--fs-sm);">${it.name}</div>
-                        <div style="font-size:var(--fs-xs);color:var(--text-light);">${it.qty} × ${it.size || '—'} · ${formatPrice(it.price)} c/u</div>
+                        <div style="font-size:var(--fs-xs);color:var(--text-light);">${it.qty} × ${it.size || ''} · ${formatPrice(it.price)} c/u</div>
                     </div>
                     <div style="font-weight:800;color:var(--red-primary);font-size:var(--fs-sm);">${formatPrice(it.price * it.qty)}</div>
                 </div>
             `).join('');
             const d = o.desglose || {};
-            showGenericModal(`📦 Pedido #${o.id.slice(-8)}`, `
+            showGenericModal(` Pedido #${o.id.slice(-8)}`, `
                 <p style="font-size:var(--fs-xs);color:var(--text-light);margin-bottom:14px;">${new Date(o.fecha).toLocaleString('es-CO')}</p>
                 ${itemsHtml}
                 <div style="margin-top:14px;padding:14px;border-radius:var(--radius-md);background:rgba(255,245,236,0.7);">
                     <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:var(--text-muted);font-size:var(--fs-sm);">Subtotal</span><span style="font-weight:700;">${formatPrice(d.subtotal || 0)}</span></div>
-                    ${d.promoDiscount > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:var(--success);"><span style="font-size:var(--fs-sm);">🎁 Promo ${o.appliedPromo}%</span><span style="font-weight:700;">− ${formatPrice(d.promoDiscount)}</span></div>` : ''}
-                    ${d.bonoUmbral100k || d.umbralDisc ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:var(--success);"><span style="font-size:var(--fs-sm);">💎 Bono $100k</span><span style="font-weight:700;">− ${formatPrice(d.bonoUmbral100k || d.umbralDisc || 0)}</span></div>` : ''}
-                    <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:var(--text-muted);font-size:var(--fs-sm);">Envío</span><span style="font-weight:700;">${(d.envio === 0 || d.envioGratisAplicado) ? '🎁 Gratis' : formatPrice(d.envio || 0)}</span></div>
+                    ${d.promoDiscount > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:var(--success);"><span style="font-size:var(--fs-sm);"> Promo ${o.appliedPromo}%</span><span style="font-weight:700;"> ${formatPrice(d.promoDiscount)}</span></div>` : ''}
+                    ${d.bonoUmbral100k || d.umbralDisc ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:var(--success);"><span style="font-size:var(--fs-sm);"> Bono $100k</span><span style="font-weight:700;"> ${formatPrice(d.bonoUmbral100k || d.umbralDisc || 0)}</span></div>` : ''}
+                    <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:var(--text-muted);font-size:var(--fs-sm);">Envío</span><span style="font-weight:700;">${(d.envio === 0 || d.envioGratisAplicado) ? ' Gratis' : formatPrice(d.envio || 0)}</span></div>
                     <div style="border-top:2px solid var(--orange-warm);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;"><span style="font-weight:800;font-size:var(--fs-md);color:var(--red-deep);">Total</span><span style="font-weight:900;font-size:var(--fs-lg);color:var(--red-primary);">${formatPrice(o.total || 0)}</span></div>
                 </div>
                 <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
-                    <button class="qv-btn-secondary" style="flex:1;min-width:160px;" onclick="closeGenericModal();navigateTo('favorites')">♥ Mis Favoritos</button>
-                    <button class="qv-btn-primary" style="flex:1;min-width:160px;" onclick="closeGenericModal();navigateTo('home','productos')">🛍️ Comprar de nuevo</button>
+                    <button class="qv-btn-secondary" style="flex:1;min-width:160px;" onclick="closeGenericModal();navigateTo('favorites')"> Mis Favoritos</button>
+                    <button class="qv-btn-primary" style="flex:1;min-width:160px;" onclick="closeGenericModal();navigateTo('home','productos')"> Comprar de nuevo</button>
                 </div>
             `);
         }
@@ -1543,32 +1973,30 @@
             const overallPct = Math.max(pctEnvioQty, pctEnvioMonto, pctBono);
             const prox = calcularProximosBeneficios ? calcularProximosBeneficios(cart, appliedPromo || 0) : null;
             const nextMsg = prox && !prox.tieneBono100k
-                ? `Faltan $${formatearCOPConSimbolo ? formatearCOPConSimbolo(prox.paraBono100k) : formatPrice(prox.paraBono100k)} para bono 10% 🎁`
+                ? `Faltan $${formatearCOPConSimbolo ? formatearCOPConSimbolo(prox.paraBono100k) : formatPrice(prox.paraBono100k)} para bono 10% `
                 : (prox && !prox.tieneEnvioGratisPorCantidad && !prox.tieneEnvioGratisPorMonto
-                    ? `Compra ${prox.paraEnvioGratisCantidad} producto(s) más para envío gratis 🚚`
-                    : bono100kOk ? '🎉 ¡Todos los beneficios activos!' : 'Sigue añadiendo productos para obtener beneficios');
+                    ? `Compra ${prox.paraEnvioGratisCantidad} producto(s) más para envío gratis `
+                    : bono100kOk ? ' ¡Todos los beneficios activos!' : 'Sigue añadiendo productos para obtener beneficios');
             return `
                 <div class="benefits-progress">
                     <div class="benefits-item ${envioCantOk || envioMontoOk ? 'done' : ''}">
-                        <span>${envioCantOk || envioMontoOk ? '✓' : '🚚'} Envío gratis</span>
-                        <span style="font-size:0.7rem;">${envioCantOk ? '5+ prod ✓' : (envioMontoOk ? '>$150k ✓' : `${totalQty}/${SHIPPING_CONFIG.UMBRAL_GRATIS_CANTIDAD + 1}`)}</span>
+                        <span>${envioCantOk || envioMontoOk ? '' : ''} Envío gratis</span>
+                        <span style="font-size:0.7rem;">${envioCantOk ? '5+ prod ' : (envioMontoOk ? '>$150k ' : `${totalQty}/${SHIPPING_CONFIG.UMBRAL_GRATIS_CANTIDAD + 1}`)}</span>
                     </div>
                     <div class="benefits-bar"><div class="benefits-bar-fill" style="width:${overallPct}%;"></div></div>
                     <div class="benefits-item ${bono100kOk ? 'done' : ''}">
-                        <span>${bono100kOk ? '✓' : '💎'} Bono 10% > $100k</span>
-                        <span style="font-size:0.7rem;">${bono100kOk ? 'Activo ✓' : formatPrice(subtotal) + ' / $100.001'}</span>
+                        <span>${bono100kOk ? '' : ''} Bono 10% > $100k</span>
+                        <span style="font-size:0.7rem;">${bono100kOk ? 'Activo ' : formatPrice(subtotal) + ' / $100.001'}</span>
                     </div>
                     <div class="benefits-next">${nextMsg}</div>
                 </div>
             `;
         }
 
-        /* 16) HOOK ADDTOCART PARA FORZAR TALLA (Quick View) */
-        const _origAddToCart = addToCart;
+        /* 16) ADD TO CART CON TALLA SELECCIONADA */
         function addToCart(product) {
+            const card = typeof event !== 'undefined' && event?.target?.closest ? event.target.closest('.product-card') : null;
             let selectedSize = product._forcedSize || 'M';
-            let card = null;
-            try { card = event?.target?.closest?.('.product-card'); } catch {}
             if (card && !product._forcedSize) {
                 const sizeEl = card.querySelector('.size-option.selected');
                 if (sizeEl) selectedSize = sizeEl.textContent.trim();
@@ -1579,16 +2007,18 @@
                 card.classList.remove('just-added'); void card.offsetWidth; card.classList.add('just-added');
                 setTimeout(() => card.classList.remove('just-added'), 500);
             }
-            const existing = cart.find(i => i.id === product.id && i.size === selectedSize);
-            if (existing) existing.qty++;
-            else cart.push({ ...product, size: selectedSize, qty: product.qty || 1 });
-            if (product.qty) delete product.qty;
+            const payload = getProductPayload(product, selectedSize, product.qty || 1);
+            if (!payload) return showToast('Producto no disponible', 'error');
+            const existing = cart.find(i => i.id === payload.id && i.size === payload.size);
+            if (existing) existing.qty = Math.min(CART_LIMITS.MAX_QTY_PER_ITEM, existing.qty + payload.qty);
+            else if (calcularCantidadCarrito() + payload.qty <= CART_LIMITS.MAX_TOTAL_ITEMS) cart.push(payload);
+            else return showToast('El carrito alcanzó su límite de unidades', 'error');
+            cart = normalizeCart(cart);
             updateCart(); saveCart();
             showToast(`${product.name} (${selectedSize}) añadido al carrito`, 'success');
         }
 
-        /* 17) HOOK DE updateCart PARA INYECTAR BENEFITS */
-        const _origUpdateCart = updateCart;
+        /* 17) CARRITO CON BENEFICIOS */
         function updateCart() {
             const itemsEl = document.getElementById('cartItems');
             const emptyEl = document.getElementById('cartEmpty');
@@ -1616,53 +2046,46 @@
             }
             itemsEl.innerHTML = cart.map((item, idx) => `
                 <div class="cart-item">
-                    <div class="cart-item-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+                    <div class="cart-item-img"><img src="${escapeHTML(item.img)}" alt="${escapeHTML(item.name)}" loading="lazy"></div>
                     <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-size">Talla: ${item.size} · ${item.category}</div>
+                        <div class="cart-item-name">${escapeHTML(item.name)}</div>
+                        <div class="cart-item-size">Talla: ${escapeHTML(item.size)} · ${escapeHTML(item.gender || item.category)}</div>
                         <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
                         <div class="cart-item-qty">
-                            <button class="qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Restar">−</button>
+                            <button class="qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Restar"></button>
                             <span class="qty-value">${item.qty}</span>
                             <button class="qty-btn" onclick="changeQty(${idx}, 1)" aria-label="Sumar">+</button>
                         </div>
                     </div>
-                    <button class="cart-remove" onclick="removeFromCart(${idx})" aria-label="Eliminar">✕</button>
+                    <button class="cart-remove" onclick="removeFromCart(${idx})" aria-label="Eliminar"></button>
                 </div>
             `).join('');
 
-            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const shipping = totalQty > 5 ? 0 : 5000;
-            let discountPromo = 0;
-            if (appliedPromo) discountPromo = subtotal * (appliedPromo / 100);
-            const afterPromo = subtotal - discountPromo;
-            const beforeUmbral = afterPromo + shipping;
-            let umbralDisc = beforeUmbral > 100000 ? beforeUmbral * 0.10 : 0;
-            const total = beforeUmbral - umbralDisc;
+            const breakdown = calcularDesglosePedidoCompleto();
 
             summaryEl.innerHTML = `
                 ${renderBenefitsProgress()}
                 <div class="summary-row">
-                    <span>Subtotal (${totalQty} ${totalQty === 1 ? 'producto' : 'productos'})</span>
-                    <span>${formatPrice(subtotal)}</span>
+                    <span>Subtotal (${breakdown.totalQty} ${breakdown.totalQty === 1 ? 'producto' : 'productos'})</span>
+                    <span>${formatPrice(breakdown.subtotal)}</span>
                 </div>
-                ${appliedPromo ? `
+                ${breakdown.promoDiscount ? `
                 <div class="summary-row discount-row">
-                    <span>Código (${appliedPromo}%)</span>
-                    <span>− ${formatPrice(discountPromo)}</span>
+                    <span>Código (${breakdown.appliedPromoPct}%)</span>
+                    <span> ${formatPrice(breakdown.promoDiscount)}</span>
                 </div>` : ''}
-                ${umbralDisc > 0 ? `
+                ${breakdown.umbralDisc > 0 ? `
                 <div class="summary-row discount-row">
-                    <span>🎁 Bono > $100k</span>
-                    <span>− ${formatPrice(umbralDisc)}</span>
+                    <span> Bono > $100k</span>
+                    <span> ${formatPrice(breakdown.umbralDisc)}</span>
                 </div>` : ''}
                 <div class="summary-row">
-                    <span>Envío ${shipping === 0 ? '<span style="color:var(--success);">· Gratis 🎉</span>' : ''}</span>
-                    <span>${shipping === 0 ? formatPrice(0) : formatPrice(shipping)}</span>
+                    <span>Envío ${breakdown.shipping === 0 ? '<span style="color:var(--success);">· Gratis </span>' : ''}</span>
+                    <span>${breakdown.shipping === 0 ? formatPrice(0) : formatPrice(breakdown.shipping)}</span>
                 </div>
                 <div class="summary-row total-row">
                     <span>Total</span>
-                    <span>${formatPrice(total)}</span>
+                    <span>${formatPrice(breakdown.total)}</span>
                 </div>
             `;
             if (checkoutBtn) checkoutBtn.style.display = 'block';
@@ -1673,7 +2096,7 @@
             const wrap = document.getElementById('favoritesContent');
             if (!wrap) { if (typeof renderFavoritesSPA === 'function') return renderFavoritesSPA(); }
             if (favorites.length === 0) {
-                wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon">♡</div><h3>Aún no tienes favoritos</h3><p>Explora nuestra colección y guarda tus prendas preferidas para después.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><a href="catalogo.html" class="qv-btn-primary" style="min-width:200px;text-align:center;display:inline-block;text-decoration:none;">🛍️ Explorar Colección</a><a href="index.html#howtobuy" class="qv-btn-secondary" style="min-width:200px;text-align:center;display:inline-block;text-decoration:none;">¿Cómo comprar?</a></div></div>`;
+                wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon"></div><h3>Aún no tienes favoritos</h3><p>Explora nuestra colección y guarda tus prendas preferidas para después.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;"><a href="catalogo.html" class="qv-btn-primary" style="min-width:200px;text-align:center;display:inline-block;text-decoration:none;"> Explorar Colección</a><a href="index.html#howtobuy" class="qv-btn-secondary" style="min-width:200px;text-align:center;display:inline-block;text-decoration:none;">¿Cómo comprar?</a></div></div>`;
                 return;
             }
             const prods = favorites.map(id => PRODUCTS_DATA.find(p => p.id === id)).filter(Boolean);
@@ -1681,8 +2104,8 @@
                 const badge = prod.badge ? `<span class="product-badge ${prod.badge.includes('%') ? 'discount' : ''}">${prod.badge}</span>` : '';
                 const origHtml = prod.originalPrice ? `<span class="product-price-original">${formatPrice(prod.originalPrice)}</span>` : '';
                 const sizesHtml = (prod.sizes || ['S','M','L']).map(s => `<div class="size-option" onclick="selectSize(this)">${s}</div>`).join('');
-                const stars = '★'.repeat(prod.rating || 0) + '☆'.repeat(5 - (prod.rating || 0));
-                return `<article class="product-card reveal visible" data-category="${prod.category}" data-id="${prod.id}" data-price="${prod.price}" data-discount="${prod.discount}" data-isnew="${prod.isNew}">${badge}<button class="product-fav active" onclick="removeFromFavFull(${prod.id})" aria-label="Quitar de favoritos">♥</button><button class="quick-view-btn" style="opacity:1;transform:translateY(0);" onclick="openQuickView(${prod.id})">👁️ Ver</button><div class="product-image"><img src="${prod.img}" alt="${prod.name}" loading="lazy"></div><div class="product-info"><div class="product-category">${prod.gender} · ${prod.line}</div><h3 class="product-name">${prod.name}</h3><div class="product-rating"><div class="rating-stars">${stars}</div><div class="rating-count">(${prod.reviews || 0})</div></div><p class="product-description">${prod.desc}</p><div class="product-size">${sizesHtml}</div><div class="product-footer"><div class="price-container">${origHtml}<span class="product-price">${formatPrice(prod.price)}</span></div><button class="add-to-cart-btn" onclick='addToCart({id:${prod.id},name:${JSON.stringify(prod.name)},price:${prod.price},img:"${prod.img}",category:"${prod.gender}"${prod.originalPrice ? `,originalPrice:${prod.originalPrice}` : ''}})' aria-label="Añadir al carrito">+</button></div></div></article>`;
+                const stars = `Calificación ${prod.rating || 0}/5`;
+                return `<article class="product-card reveal visible" data-category="${prod.category}" data-id="${prod.id}" data-price="${prod.price}" data-discount="${prod.discount}" data-isnew="${prod.isNew}">${badge}<button class="product-fav active" onclick="removeFromFavFull(${prod.id})" aria-label="Quitar de favoritos"></button><button class="quick-view-btn" style="opacity:1;transform:translateY(0);" onclick="goToProduct(${prod.id})">Ver producto </button><div class="product-image" onclick="goToProduct(${prod.id})"><img src="${prod.img}" alt="${prod.name}" loading="lazy"></div><div class="product-info"><div class="product-category">${prod.gender} · ${prod.line}</div><h3 class="product-name" onclick="goToProduct(${prod.id})">${prod.name}</h3><div class="product-rating"><div class="rating-stars">${stars}</div><div class="rating-count">(${prod.reviews || 0})</div></div><p class="product-description">${prod.desc}</p><div class="product-size">${sizesHtml}</div><div class="product-footer"><div class="price-container">${origHtml}<span class="product-price">${formatPrice(prod.price)}</span></div><button class="add-to-cart-btn" onclick='addToCart({id:${prod.id},name:${JSON.stringify(prod.name)},price:${prod.price},img:"${prod.img}",category:"${prod.gender}"${prod.originalPrice ? `,originalPrice:${prod.originalPrice}` : ''}})' aria-label="Añadir al carrito">+</button></div></div></article>`;
             }).join('')}</div>`;
             sincronizarFavoritosUI();
         }
@@ -1691,7 +2114,7 @@
             if (i >= 0) favorites.splice(i, 1);
             saveFavorites(); sincronizarFavoritosUI();
             const p = PRODUCTS_DATA.find(x => x.id === id);
-            showToast(`♡ ${p?.name || 'Producto'} eliminado de favoritos`, 'info');
+            showToast(` ${p?.name || 'Producto'} eliminado de favoritos`, 'info');
             renderFavoritesFullPage();
         }
         function renderOrdersFullPage() {
@@ -1713,6 +2136,9 @@
             const emptyContainer = document.getElementById('fullCartEmpty');
             if (!itemsContainer && !summaryContainer) return;
             try {
+                if (emptyContainer) emptyContainer.style.display = cart.length ? 'none' : 'block';
+                if (cart.length === 0) renderEmptyCartCarousel();
+                else clearInterval(_emptyCartTimer);
                 if (typeof updateFullCartUI === 'function') return updateFullCartUI();
                 if (typeof updateCart === 'function') {
                     updateCart();
@@ -1723,7 +2149,7 @@
                         summaryContainer.innerHTML = modalSummary.innerHTML;
                         const promoRow = `
                             <div style="margin:var(--space-4) 0;padding:var(--space-3);border-radius:var(--radius-md);background:rgba(255,245,236,0.6);">
-                                <div style="font-weight:700;margin-bottom:var(--space-2);color:var(--red-deep);">🎁 Código Promocional</div>
+                                <div style="font-weight:700;margin-bottom:var(--space-2);color:var(--red-deep);"> Código Promocional</div>
                                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                                     <input type="text" id="promoInputFull" placeholder="Ej: ANTHROS10" style="flex:1;min-width:140px;padding:10px 14px;border:2px solid rgba(214,140,69,0.25);border-radius:var(--radius-sm);font-size:var(--fs-sm);background:#fff;" />
                                     <button class="qv-btn-secondary" onclick="applyPromoFull()">Aplicar</button>
@@ -1731,8 +2157,8 @@
                                 <div id="promoMsgFull" style="margin-top:8px;font-size:var(--fs-xs);color:var(--text-light);"></div>
                             </div>
                             <div style="margin-top:var(--space-4);display:flex;flex-direction:column;gap:10px;">
-                                <button class="qv-btn-primary" style="width:100%;justify-content:center;padding:14px 20px;font-size:var(--fs-md);" onclick="checkout()">💳 Finalizar Compra</button>
-                                <button class="qv-btn-secondary" style="width:100%;justify-content:center;padding:12px 18px;" onclick="navigateTo('catalogo')">🛍️ Seguir Comprando</button>
+                                <button class="qv-btn-primary" style="width:100%;justify-content:center;padding:14px 20px;font-size:var(--fs-md);" onclick="checkout()"> Finalizar Compra</button>
+                                <button class="qv-btn-secondary" style="width:100%;justify-content:center;padding:12px 18px;" onclick="navigateTo('catalogo')"> Seguir Comprando</button>
                             </div>`;
                         summaryContainer.insertAdjacentHTML('beforeend', promoRow);
                     }
@@ -1745,10 +2171,10 @@
             const code = (input?.value || '').toUpperCase().trim();
             if (!code) { if (msg) msg.textContent = 'Escribe un código'; return; }
             const pct = PROMO_CODES[code];
-            if (!pct) { if (msg) { msg.textContent = '❌ Código inválido. Prueba: ANTHROS10, BIENVENIDO, VERANO20'; msg.style.color = 'var(--red-primary)'; } return; }
+            if (!pct) { if (msg) { msg.textContent = ' Código inválido. Prueba: ANTHROS10, BIENVENIDO, VERANO20'; msg.style.color = 'var(--red-primary)'; } return; }
             appliedPromo = pct; saveCart();
-            if (msg) { msg.textContent = `✅ Código ${code} aplicado: ${pct}% OFF`; msg.style.color = 'var(--success)'; }
-            showToast(`🎁 ${code}: ${pct}% OFF aplicado!`, 'success');
+            if (msg) { msg.textContent = ` Código ${code} aplicado: ${pct}% OFF`; msg.style.color = 'var(--success)'; }
+            showToast(` ${code}: ${pct}% OFF aplicado!`, 'success');
             if (typeof renderFullCartPage === 'function') renderFullCartPage();
         }
 
@@ -1756,14 +2182,22 @@
            MÓDULO 8 · AUTO-EJECUCIÓN DE NUEVOS MÓDULOS
            ========================================================= */
         (function autoInitAllNewModules() {
+            document.querySelectorAll('.theme-toggle').forEach(button => {
+                if (!button.textContent.trim()) button.textContent = 'Tema';
+            });
+            document.querySelectorAll('.favorites-btn').forEach(button => {
+                const count = button.querySelector('.favorites-count');
+                if (count && !button.firstChild?.textContent?.trim()) button.insertBefore(document.createTextNode('Favoritos '), button.firstChild);
+                if (!count && !button.textContent.trim()) button.textContent = 'Favoritos';
+            });
             if (userPreferences.theme === 'dark') {
                 document.documentElement.classList.add('theme-dark');
                 const btn = document.getElementById('themeToggle');
-                if (btn) btn.textContent = '🌙';
+                if (btn) btn.textContent = '';
             }
             updateFavoritesCount();
-            initCountdownTimer();
             initTestimonialsCarousel();
+            initHeroCarousel();
             sincronizarFavoritosUI();
             updateScrollProgress();
         })();
@@ -1776,7 +2210,7 @@
                 if (isPage('catalogo')) {
                     if (typeof renderProductsFromData === 'function') renderProductsFromData(PRODUCTS_DATA);
                 } else if (isPage('index.html') || path === '/' || path === '' || path.endsWith('/frontend/')) {
-                    const featured = PRODUCTS_DATA.slice(0, 4);
+                    const featured = PRODUCTS_DATA.slice(0, 6);
                     if (typeof renderProductsFromData === 'function' && document.getElementById('productsGrid')) {
                         renderProductsFromData(featured);
                     }
@@ -1793,3 +2227,8 @@
         })();
 
         updateCart();
+
+
+
+
+

@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#780000">
+    <meta name="description" content="Detalle de producto Anthros: materiales, tallas, colores, precio y envío.">
+    <title>Producto | Anthros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="product-page">
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <nav aria-label="Navegación principal">
+        <div class="nav-inner">
+            <a href="./index.html" class="nav-logo">ANTHROS</a>
+            <ul class="nav-links">
+                <li><a href="./index.html">Inicio</a></li>
+                <li><a href="./nosotros.html">Nosotros</a></li>
+                <li><a href="./catalogo.html">Colección</a></li>
+                <li><a href="./favoritos.html">Favoritos</a></li>
+                <li><a href="./pedidos.html">Pedidos</a></li>
+                <li><a href="./cuenta.html">Mi cuenta</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
+                <a class="cart-btn" href="./carrito.html" aria-label="Abrir carrito"> <span class="cart-btn-label">Carrito</span><span class="cart-count" id="cartCount">0</span></a>
+                <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="productDetail" class="product-detail-main" aria-live="polite"></main>
+
+    <section class="product-recommendations" aria-labelledby="relatedProductsTitle">
+        <div class="product-recommendations-heading">
+            <span class="section-eyebrow">Continúa explorando</span>
+            <h2 id="relatedProductsTitle">También podría acompañarte</h2>
+            <p>Una selección conectada por materiales, color, colección y lo que has estado mirando.</p>
+        </div>
+        <div class="recommendations-rail" id="productRecommendations"></div>
+    </section>
+
+    <footer><div class="footer-inner"><div class="footer-brand">ANTHROS</div><p class="footer-tagline">Viste tu autenticidad. Vive tu esencia.</p><div class="footer-bottom"><p> 2026 ANTHROS · Moda colombiana consciente</p><a href="./catalogo.html">Volver al catálogo</a></div></div></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./calculos.js"></script>
+    <script src="./app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initProductPage);
+    </script>
+</body>
+</html>
+
+
+
+
+

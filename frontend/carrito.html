@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-CO">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#e63946">
-    <meta name="description" content="Tu Carrito ANTHROS — Revisa tus productos, aplica códigos y finaliza tu compra de forma segura.">
+    <meta name="description" content="Tu Carrito ANTHROS  Revisa tus productos, aplica códigos y finaliza tu compra de forma segura.">
     <title>Mi Carrito | ANTHROS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,16 +19,17 @@
             <a href="./index.html" class="nav-logo animate-fade" onclick="event.preventDefault();navigateTo('home');">ANTHROS</a>
             <ul class="nav-links">
                 <li><a href="./index.html" class="animate-fade-up delay-1" onclick="event.preventDefault();navigateTo('home');">Inicio</a></li>
-                <li><a href="./index.html#nosotros" class="animate-fade-up delay-2" onclick="event.preventDefault();navigateTo('home','nosotros');">Nosotros</a></li>
+                <li><a href="./nosotros.html" class="animate-fade-up delay-2" onclick="event.preventDefault();navigateTo('nosotros');">Nosotros</a></li>
                 <li><a href="./catalogo.html" class="animate-fade-up delay-3" onclick="event.preventDefault();navigateTo('catalogo');">Colección</a></li>
                 <li><a href="./favoritos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
                 <li><a href="./pedidos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('orders');">Pedidos</a></li>
+                <li><a href="./cuenta.html" class="animate-fade-up delay-4">Mi cuenta</a></li>
                 <li><a href="./index.html#contacto" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
             </ul>
             <div class="nav-actions">
-                <button class="theme-toggle animate-fade" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema">☀️</button>
-                <button class="favorites-btn animate-fade-up delay-4" onclick="navigateTo('favorites')" aria-label="Ver favoritos" title="Mis favoritos">♥ <span class="favorites-count" id="favoritesCount" style="display:none;">0</span></button>
-                <button class="cart-btn animate-fade-up delay-5" onclick="toggleCart()" aria-label="Abrir carrito">🛒 <span class="cart-btn-label">Carrito</span> <span class="cart-count" id="cartCount">0</span></button>
+                <button class="theme-toggle animate-fade" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema"></button>
+                <button class="favorites-btn animate-fade-up delay-4" onclick="navigateTo('favorites')" aria-label="Ver favoritos" title="Mis favoritos"> <span class="favorites-count" id="favoritesCount" style="display:none;">0</span></button>
+                <button class="cart-btn animate-fade-up delay-5" onclick="toggleCart()" aria-label="Abrir carrito"> <span class="cart-btn-label">Carrito</span> <span class="cart-count" id="cartCount">0</span></button>
                 <button class="hamburger animate-fade" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
             </div>
         </div>
@@ -38,17 +39,17 @@
         <div class="mobile-menu-panel" onclick="event.stopPropagation()">
             <div class="mobile-menu-title">MENÚ ANTHROS</div>
             <ul class="mobile-nav-links">
-                <li><a href="./index.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('home');">🏠 Inicio</a></li>
-                <li><a href="./index.html#nosotros" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','nosotros');">👥 Nosotros</a></li>
-                <li><a href="./catalogo.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Colección</a></li>
-                <li><a href="./favoritos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('favorites');">♥ Mis Favoritos</a></li>
-                <li><a href="./pedidos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('orders');">📦 Mis Pedidos</a></li>
-                <li><a href="./index.html#contacto" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','contacto');">📞 Contacto</a></li>
-                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showFAQModal();">❓ Preguntas Frecuentes</a></li>
-                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showSizeGuideModal();">📏 Guía de Tallas</a></li>
+                <li><a href="./index.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('home');"> Inicio</a></li>
+                <li><a href="./nosotros.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('nosotros');"> Nosotros</a></li>
+                <li><a href="./catalogo.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');"> Colección</a></li>
+                <li><a href="./favoritos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('favorites');"> Mis Favoritos</a></li>
+                <li><a href="./pedidos.html" onclick="event.preventDefault();closeMobileMenu();navigateTo('orders');"> Mis Pedidos</a></li>
+                <li><a href="./index.html#contacto" onclick="event.preventDefault();closeMobileMenu();navigateTo('home','contacto');"> Contacto</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showFAQModal();"> Preguntas Frecuentes</a></li>
+                <li><a href="#" onclick="event.preventDefault();closeMobileMenu();showSizeGuideModal();"> Guía de Tallas</a></li>
             </ul>
             <div class="mobile-menu-divider"></div>
-            <a href="./catalogo.html" class="mobile-cta" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');">🛍️ Explorar Productos</a>
+            <a href="./catalogo.html" class="mobile-cta" onclick="event.preventDefault();closeMobileMenu();navigateTo('catalogo');"> Explorar Productos</a>
         </div>
     </div>
 
@@ -60,7 +61,7 @@
                 <span style="margin: 0 6px;">/</span>
                 <span style="color: var(--red-primary); font-weight: 600;">Mi Carrito</span>
             </nav>
-            <h1 style="font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: var(--red-deep); margin-bottom: var(--space-2);">🛒 Tu Carrito Anthros</h1>
+            <h1 style="font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: var(--red-deep); margin-bottom: var(--space-2);"> Tu Carrito Anthros</h1>
             <p style="font-size: var(--fs-md); color: var(--text-muted); max-width: 640px;">Revisa tus prendas, aplica tu código promocional y finaliza tu compra. ¡Envío gratis en compras de más de 5 unidades o mayores a $150.000!</p>
         </div>
     </header>
@@ -72,19 +73,20 @@
                 <!-- COLUMNA IZQUIERDA: ITEMS CARRITO -->
                 <div style="background: var(--cream-50); border-radius: var(--radius-lg); padding: var(--space-4); box-shadow: var(--shadow-sm);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
-                        <h2 style="font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 700; color: var(--red-deep); margin: 0;">🎁 Productos en tu Carrito</h2>
+                        <h2 style="font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 700; color: var(--red-deep); margin: 0;"> Productos en tu Carrito</h2>
                         <a href="./catalogo.html" class="qv-btn-secondary" style="text-decoration: none;" onclick="event.preventDefault();navigateTo('catalogo');">+ Añadir más</a>
                     </div>
                     <div id="fullCartEmpty">
                         <div class="empty-state" style="padding: var(--space-7) var(--space-4);">
-                            <div class="empty-state-icon" style="font-size: 4rem; margin-bottom: var(--space-3);">🛒</div>
+                            <div class="empty-state-icon" style="font-size: 4rem; margin-bottom: var(--space-3);"></div>
                             <h3 style="font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 700; color: var(--red-deep); margin-bottom: var(--space-2);">Tu carrito está vacío</h3>
                             <p style="color: var(--text-muted); margin-bottom: var(--space-4); max-width: 480px; margin-inline: auto;">Parece que aún no has añadido prendas a tu carrito. ¡Explora nuestra colección y encuentra tus favoritas!</p>
                             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                                <a href="./catalogo.html" class="qv-btn-primary" style="min-width: 200px; text-align: center; display: inline-block; text-decoration: none;" onclick="event.preventDefault();navigateTo('catalogo');">🛍️ Explorar Colección</a>
-                                <a href="./favoritos.html" class="qv-btn-secondary" style="min-width: 200px; text-align: center; display: inline-block; text-decoration: none;" onclick="event.preventDefault();navigateTo('favorites');">♥ Mis Favoritos</a>
+                                <a href="./catalogo.html" class="qv-btn-primary" style="min-width: 200px; text-align: center; display: inline-block; text-decoration: none;" onclick="event.preventDefault();navigateTo('catalogo');"> Explorar Colección</a>
+                                <a href="./favoritos.html" class="qv-btn-secondary" style="min-width: 200px; text-align: center; display: inline-block; text-decoration: none;" onclick="event.preventDefault();navigateTo('favorites');"> Mis Favoritos</a>
                             </div>
                         </div>
+                        <section class="empty-cart-carousel" id="emptyCartRecommendations" aria-labelledby="emptyCartCarouselTitle"></section>
                     </div>
                     <div class="cart-items" id="fullCartItems" style="min-height: 200px;"></div>
                 </div>
@@ -100,7 +102,7 @@
 
     <!-- NEWSLETTER -->
     <section class="newsletter reveal" style="margin-top: var(--space-7);">
-        <h2>✨ Aún sin decidirte?</h2>
+        <h2> Aún sin decidirte?</h2>
         <p>Suscríbete para obtener un 10% de descuento en tu primera compra y ofertas exclusivas.</p>
         <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
             <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="Tu correo electrónico" required>
@@ -126,29 +128,29 @@
                     <li><a href="#" onclick="event.preventDefault();showSizeGuideModal();">Guía de Tallas</a></li>
                     <li><a href="./pedidos.html" onclick="event.preventDefault();navigateTo('orders');">Mis Pedidos</a></li>
                 </ul></div>
-                <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Términos</a></li><li><a href="#">Privacidad</a></li><li><a href="#">Cambios</a></li><li><a href="#">Garantía</a></li></ul></div>
+                <div class="footer-col"><h4>Legal</h4><ul><li><a href="./terminos.html">Términos</a></li><li><a href="./privacidad.html">Privacidad</a></li><li><a href="./garantias.html">Cambios</a></li><li><a href="./garantias.html">Garantía</a></li></ul></div>
             </div>
             <div class="footer-social">
-                <a href="#" class="social-icon" title="Instagram">📷</a>
-                <a href="#" class="social-icon" title="Facebook">📘</a>
-                <a href="#" class="social-icon" title="TikTok">🎵</a>
-                <a href="#" class="social-icon" title="WhatsApp">💬</a>
+                <a href="#" class="social-icon" title="Instagram"></a>
+                <a href="#" class="social-icon" title="Facebook"></a>
+                <a href="#" class="social-icon" title="TikTok"></a>
+                <a href="#" class="social-icon" title="WhatsApp"></a>
             </div>
-            <div class="footer-bottom"><p>© 2024 ANTHROS — Todos los derechos reservados</p><p>Hecho con 🔥 pasión por la moda colombiana · Barranquilla</p></div>
+            <div class="footer-bottom"><p> 2024 ANTHROS  Todos los derechos reservados</p><p>Hecho con  pasión por la moda colombiana · Barranquilla</p></div>
         </div>
     </footer>
 
-    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Volver arriba">↑</button>
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()" aria-label="Volver arriba"></button>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <!-- CART MODAL TAMBIÉN EXISTE AQUÍ POR SI EL USUARIO ABRE EL BOTÓN PEQUEÑO (AUNQUE TENEMOS PÁGINA DEDICADA) -->
     <div class="cart-modal" id="cartModal" onclick="closeCartOutside(event)" role="dialog" aria-modal="true">
         <div class="cart-panel" onclick="event.stopPropagation()">
-            <div class="cart-header"><h3>🛍️ Tu Carrito</h3><button class="cart-close" onclick="toggleCart()" aria-label="Cerrar">×</button></div>
+            <div class="cart-header"><h3> Tu Carrito</h3><button class="cart-close" onclick="toggleCart()" aria-label="Cerrar">×</button></div>
             <div class="promo-section"><div class="promo-input-wrapper"><input type="text" class="promo-input" id="promoInput" placeholder="Código (ej: BIENVENIDO)"><button class="promo-btn" onclick="applyPromo()">Aplicar</button></div><div class="promo-message" id="promoMessage"></div></div>
             <div class="cart-items" id="cartItems"></div>
             <div class="cart-summary" id="cartSummary">
-                <div class="cart-empty" id="cartEmpty"><div class="cart-empty-icon">🛒</div><p>Tu carrito está vacío</p><p>¡Añade prendas para comenzar!</p></div>
+                <div class="cart-empty" id="cartEmpty"><div class="cart-empty-icon"></div><p>Tu carrito está vacío</p><p>¡Añade prendas para comenzar!</p></div>
             </div>
             <button class="checkout-btn" id="checkoutBtn" style="display:none;" onclick="checkout()">Finalizar Compra</button>
         </div>
@@ -158,3 +160,7 @@
     <script src="./app.js"></script>
 </body>
 </html>
+
+
+
+

@@ -1,5 +1,5 @@
-//Mi hoja de calculos - ANTHROS MARKETPLACE v2.0
-console.log("🧮 Calculadora ANTHROS Marketplace v2.0 cargada");
+﻿//Mi hoja de calculos - ANTHROS MARKETPLACE v2.0
+console.log(" Calculadora ANTHROS Marketplace v2.0 cargada");
 
 /* ===================================================================
    CONFIGURACIÓN GLOBAL (CONSTANTES)
@@ -83,13 +83,13 @@ function calcularPrecioConImpuesto(precio, porcentajeImpuesto) {
 function calcularTotalPedido(precioUnitario, cantidad, costoEnvio) {
     if (cantidad > CONFIG_TIENDA.ENVIO_GRATIS_CANTIDAD) {
         costoEnvio = 0;
-        console.log("✅ El envío es gratis por comprar más de 5 productos");
+        console.log(" El envío es gratis por comprar más de 5 productos");
     }
     const subtotal = precioUnitario * cantidad;
     let totalPedido = subtotal + costoEnvio;
     if (totalPedido > CONFIG_TIENDA.UMBRAL_BONO_100K) {
         totalPedido = calcularPrecioConDescuento(totalPedido, CONFIG_TIENDA.BONO_100K_PCT);
-        console.log("🎁 ¡Felicidades! Has superado el umbral de $100,000. Descuento 10% aplicado.");
+        console.log(" ¡Felicidades! Has superado el umbral de $100,000. Descuento 10% aplicado.");
     }
     return Math.round(totalPedido);
 }
@@ -328,7 +328,7 @@ function calcularOpcionesPago(items, promoPct = 0) {
             cuotas: calcularTodasLasCuotas(total),
             sinInteres: calcularCuotasSinInteres(total)
         },
-        recomendacion: total >= CONFIG_TIENDA.UMBRAL_BONO_100K ? 'Bono 100k aplicado ✓' : `Faltan $${formatearCOP(Math.max(0, CONFIG_TIENDA.UMBRAL_BONO_100K + 1 - total))} para bono 10%`
+        recomendacion: total >= CONFIG_TIENDA.UMBRAL_BONO_100K ? 'Bono 100k aplicado ' : `Faltan $${formatearCOP(Math.max(0, CONFIG_TIENDA.UMBRAL_BONO_100K + 1 - total))} para bono 10%`
     };
 }
 
@@ -363,13 +363,13 @@ function textoRangoTallas(tallasArray) {
 console.log("----- EJEMPLOS calculos.js ANTHROS v2.0 -----");
 
 const precioDescuento = calcularPrecioConDescuento(100000, 50);
-console.log("1) 50% OFF sobre $100.000 → $" + formatearCOP(precioDescuento));
+console.log("1) 50% OFF sobre $100.000  $" + formatearCOP(precioDescuento));
 
 const resultadoPedido = calcularTotalPedido(150000, 6, 5000);
-console.log("2) Total pedido (6x $150.000, envío 5k) → $" + formatearCOP(resultadoPedido));
+console.log("2) Total pedido (6x $150.000, envío 5k)  $" + formatearCOP(resultadoPedido));
 
 const precioImpuesto = calcularPrecioConImpuesto(100000, CONFIG_TIENDA.IVA_COLOMBIA);
-console.log("3) Precio + IVA 19% → $" + formatearCOP(precioImpuesto));
+console.log("3) Precio + IVA 19%  $" + formatearCOP(precioImpuesto));
 
 const carritoPrueba = [
     { price: 63920, qty: 2, originalPrice: 79900 },
@@ -389,11 +389,11 @@ console.log("5) Cuotas:", cuotasPrueba.texto);
 
 const mayoristaPrueba = calcularPrecioMayorista(50000, 60);
 console.log("6) Mayorista 60 unidades ($50k/unidad):",
-    `${mayoristaPrueba.porcentajeDescuento}% OFF → Total $${formatearCOP(mayoristaPrueba.totalMayorista)}`);
+    `${mayoristaPrueba.porcentajeDescuento}% OFF  Total $${formatearCOP(mayoristaPrueba.totalMayorista)}`);
 
 const cod1 = aplicarCodigoPromocional('blackfriday');
 const cod2 = aplicarCodigoPromocional('codigofalso');
-console.log("7) Códigos promo → BLACKFRIDAY:", cod1 + "%, FALSO:", cod2 + "%");
+console.log("7) Códigos promo  BLACKFRIDAY:", cod1 + "%, FALSO:", cod2 + "%");
 
 const proximos = calcularProximosBeneficios(carritoPrueba, 10);
 console.log("8) Próximos beneficios:", proximos);
@@ -442,3 +442,8 @@ if (typeof window !== 'undefined') {
         textoRangoTallas
     };
 }
+
+
+
+
+
