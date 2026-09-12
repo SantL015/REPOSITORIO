@@ -1,0 +1,23 @@
+{
+  "name": "activity",
+  "version": "1.0.0",
+  "description": "Readme",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --check server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SantL015/REPOSITORIO.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SantL015/REPOSITORIO/issues"
+  },
+  "homepage": "https://github.com/SantL015/REPOSITORIO#readme"
+}

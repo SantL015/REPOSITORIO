@@ -21,15 +21,12 @@
                 <li><a href="./index.html" class="animate-fade-up delay-1" onclick="event.preventDefault();navigateTo('home');">Inicio</a></li>
                 <li><a href="./nosotros.html" class="animate-fade-up delay-2" onclick="event.preventDefault();navigateTo('nosotros');">Nosotros</a></li>
                 <li><a href="./catalogo.html" class="animate-fade-up delay-3 active" onclick="event.preventDefault();navigateTo('catalogo');">Colección</a></li>
-                <li><a href="./favoritos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('favorites');">Favoritos</a></li>
                 <li><a href="./pedidos.html" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('orders');">Pedidos</a></li>
                 <li><a href="./cuenta.html" class="animate-fade-up delay-4">Mi cuenta</a></li>
                 <li><a href="./index.html#contacto" class="animate-fade-up delay-4" onclick="event.preventDefault();navigateTo('home','contacto');">Contacto</a></li>
             </ul>
             <div class="nav-actions">
-                <button class="theme-toggle animate-fade" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema"></button>
-                <button class="favorites-btn animate-fade-up delay-4" onclick="navigateTo('favorites')" aria-label="Ver favoritos" title="Mis favoritos"> <span class="favorites-count" id="favoritesCount" style="display:none;">0</span></button>
-                <button class="cart-btn animate-fade-up delay-5" onclick="toggleCart()" aria-label="Abrir carrito"> <span class="cart-btn-label">Carrito</span> <span class="cart-count" id="cartCount">0</span></button>
+                <details class="nav-utility"><summary class="nav-utility-trigger animate-fade" aria-label="Abrir herramientas de Anthros">Atelier <span aria-hidden="true">+</span><span class="nav-cart-badge" id="navCartCount">0</span></summary><div class="nav-utility-menu"><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema">Tema</button><a class="utility-link" href="./favoritos.html" onclick="event.preventDefault();navigateTo('favorites');"><span>Favoritos</span><span class="favorites-count" id="favoritesCount" style="display:none;">0</span></a><button class="utility-link utility-cart" onclick="toggleCart()"><span>Carrito</span><span class="cart-count" id="cartCount">0</span></button></div></details>
                 <button class="hamburger animate-fade" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
             </div>
         </div>

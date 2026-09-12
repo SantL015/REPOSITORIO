@@ -1,11 +1,22 @@
 ﻿        let cart = [];
         let appliedPromo = null;
         let menuOpen = false;
+        const API_BASE = '/api';
         const PROMO_CODES = {
             'ANTHROS10': 10,
             'BIENVENIDO': 15,
             'VERANO2026': 20
         };
+
+        async function apiRequest(endpoint, options = {}) {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                ...options
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error || 'No fue posible conectar con el servidor');
+            return payload;
+        }
 
         function calcularPrecioConDescuento(precio, procentajeDescuento) {
             const valorDescuento = precio * (procentajeDescuento / 100);
@@ -39,120 +50,6 @@
             toast.classList.add('show');
             clearTimeout(toast._timer);
             toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
-        }
-
-        function legacyAddToCart(product) {
-            const card = typeof event !== 'undefined' && event?.target?.closest ? event.target.closest('.product-card') : null;
-            let selectedSize = product._forcedSize || 'M';
-            if (card) {
-                const sizeEl = card.querySelector('.size-option.selected');
-                if (sizeEl) {
-                    selectedSize = sizeEl.textContent.trim();
-                } else {
-                    const firstSize = card.querySelector('.size-option');
-                    if (firstSize) { firstSize.classList.add('selected'); selectedSize = firstSize.textContent.trim(); }
-                }
-                card.classList.remove('just-added');
-                void card.offsetWidth;
-                card.classList.add('just-added');
-                setTimeout(() => card.classList.remove('just-added'), 500);
-            }
-            const existing = cart.find(i => i.id === product.id && i.size === selectedSize);
-            if (existing) existing.qty++;
-            else cart.push({ ...product, size: selectedSize, qty: 1 });
-            updateCart();
-            saveCart();
-            recordRecommendationAction({ type: 'cart', productId: product.id });
-            showToast(`${product.name} añadido al carrito`, 'success');
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-            saveCart();
-            showToast('Producto eliminado', 'info');
-        }
-
-        function changeQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
-            updateCart();
-            saveCart();
-        }
-
-        function legacyUpdateCart() {
-            const itemsEl = document.getElementById('cartItems');
-            const emptyEl = document.getElementById('cartEmpty');
-            const summaryEl = document.getElementById('cartSummary');
-            const countEl = document.getElementById('cartCount');
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            const totalQty = cart.reduce((s, i) => s + i.qty, 0);
-            countEl.textContent = totalQty;
-            countEl.classList.remove('pop');
-            void countEl.offsetWidth;
-            if (totalQty > 0) countEl.classList.add('pop');
-
-            if (cart.length === 0) {
-                itemsEl.innerHTML = '';
-                summaryEl.innerHTML = '';
-                summaryEl.appendChild(emptyEl);
-                emptyEl.style.display = 'block';
-                checkoutBtn.style.display = 'none';
-                return;
-            }
-            itemsEl.innerHTML = cart.map((item, idx) => `
-                <div class="cart-item">
-                    <div class="cart-item-img">
-                        <img src="${item.img}" alt="${item.name}" loading="lazy">
-                    </div>
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-size">Talla: ${item.size} · ${item.category}</div>
-                        <div class="cart-item-price">${formatPrice(item.price * item.qty)}</div>
-                        <div class="cart-item-qty">
-                            <button class="qty-btn" onclick="changeQty(${idx}, -1)" aria-label="Restar"></button>
-                            <span class="qty-value">${item.qty}</span>
-                            <button class="qty-btn" onclick="changeQty(${idx}, 1)" aria-label="Sumar">+</button>
-                        </div>
-                    </div>
-                    <button class="cart-remove" onclick="removeFromCart(${idx})" aria-label="Eliminar"></button>
-                </div>
-            `).join('');
-
-            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-            const shipping = totalQty > 5 ? 0 : 5000;
-            let discountPromo = 0;
-            if (appliedPromo) discountPromo = subtotal * (appliedPromo / 100);
-            const afterPromo = subtotal - discountPromo;
-            const beforeUmbral = afterPromo + shipping;
-            let umbralDisc = beforeUmbral > 100000 ? beforeUmbral * 0.10 : 0;
-            const total = beforeUmbral - umbralDisc;
-
-            summaryEl.innerHTML = `
-                <div class="summary-row">
-                    <span>Subtotal (${totalQty} ${totalQty === 1 ? 'producto' : 'productos'})</span>
-                    <span>${formatPrice(subtotal)}</span>
-                </div>
-                ${appliedPromo ? `
-                <div class="summary-row discount-row">
-                    <span>Código (${appliedPromo}%)</span>
-                    <span> ${formatPrice(discountPromo)}</span>
-                </div>` : ''}
-                ${umbralDisc > 0 ? `
-                <div class="summary-row discount-row">
-                    <span> Bono > $100k</span>
-                    <span> ${formatPrice(umbralDisc)}</span>
-                </div>` : ''}
-                <div class="summary-row">
-                    <span>Envío ${shipping === 0 ? '<span style="color:var(--success);">· Gratis </span>' : ''}</span>
-                    <span>${shipping === 0 ? formatPrice(0) : formatPrice(shipping)}</span>
-                </div>
-                <div class="summary-row total-row">
-                    <span>Total</span>
-                    <span>${formatPrice(total)}</span>
-                </div>
-            `;
-            checkoutBtn.style.display = 'block';
         }
 
         function applyPromo() {
@@ -257,7 +154,7 @@
             }));
         }
 
-        function finalizeCheckout(e) {
+        async function finalizeCheckout(e) {
             e.preventDefault();
             if (!cart.length) { showToast('Añade productos antes de pagar', 'error'); return; }
             const form = e.currentTarget;
@@ -267,12 +164,29 @@
                 showToast('Revisa nombre, correo, teléfono y dirección', 'error');
                 return;
             }
-            const order = saveOrderToHistory();
+            const order = saveOrderToHistory({
+                customer: {
+                    name: data.get('name'),
+                    email: data.get('email'),
+                    phone: data.get('phone'),
+                    city: data.get('city'),
+                    address: data.get('address')
+                },
+                payment: data.get('payment')
+            });
             const orderId = order ? order.id : 'ORD-' + Date.now().toString(36).toUpperCase();
+            let serverOrder = order;
+            try {
+                const result = await apiRequest('/orders', { method: 'POST', body: JSON.stringify(order) });
+                serverOrder = result.order || order;
+            } catch (error) {
+                console.warn('Pedido guardado localmente; API no disponible:', error.message);
+            }
             cart = [];
             appliedPromo = null;
             saveCart();
-            form.innerHTML = `<div class="checkout-success"><span></span><p class="section-eyebrow">Pedido confirmado</p><h2>Gracias por elegir Anthros.</h2><p>Tu pedido <strong>#${orderId.slice(-8)}</strong> fue registrado. Te enviaremos los detalles a <strong>${data.get('email')}</strong>.</p><a href="./index.html" class="checkout-submit">Volver al inicio </a></div>`;
+            const confirmedId = serverOrder?.id || orderId;
+            form.innerHTML = `<div class="checkout-success"><span></span><p class="section-eyebrow">Pedido confirmado</p><h2>Gracias por elegir Anthros.</h2><p>Tu pedido <strong>#${confirmedId.slice(-8)}</strong> fue registrado. Te enviaremos los detalles a <strong>${data.get('email')}</strong>.</p><a href="./index.html" class="checkout-submit">Volver al inicio </a></div>`;
         }
 
         function selectSize(el) {
@@ -302,7 +216,7 @@
             applyCatalogFilters();
         }
 
-        function subscribeNewsletter(e) {
+        async function subscribeNewsletter(e) {
             e.preventDefault();
             const input = document.getElementById('newsletterEmail');
             const email = String(input?.value || '').trim();
@@ -311,8 +225,15 @@
                 if (input) { input.style.borderColor = 'var(--red-primary)'; setTimeout(() => input.style.borderColor = '', 1500); }
                 return;
             }
+            let serverCreated = false;
+            try {
+                const result = await apiRequest('/newsletter', { method: 'POST', body: JSON.stringify({ email }) });
+                serverCreated = result.created;
+            } catch (error) {
+                console.warn('Newsletter guardado localmente; API no disponible:', error.message);
+            }
             const nuevo = saveNewsletterSubscriber(email);
-            if (nuevo) {
+            if (nuevo || serverCreated) {
                 showToast(' ¡Suscripción exitosa! 10% OFF listo', 'success');
             } else {
                 showToast(' Ya estás suscrito a nuestras novedades', 'info');
@@ -325,7 +246,7 @@
             if (newsletter) newsletter.classList.add('is-closed');
         }
 
-        function subscribeLoyalty(e) {
+        async function subscribeLoyalty(e) {
             e.preventDefault();
             const emailInput = document.getElementById('loyaltyEmail');
             const tierInput = document.getElementById('loyaltyTier');
@@ -337,13 +258,20 @@
                 return;
             }
             try {
+                let serverCreated = false;
+                try {
+                    const result = await apiRequest('/loyalty', { method: 'POST', body: JSON.stringify({ email, tier }) });
+                    serverCreated = result.created;
+                } catch (error) {
+                    console.warn('Membresía guardada localmente; API no disponible:', error.message);
+                }
                 const members = JSON.parse(localStorage.getItem(STORAGE_KEYS.LOYALTY) || '[]');
                 if (members.some(member => member.email === email)) {
                     showToast('Este correo ya pertenece al Círculo', 'info');
                 } else {
                     members.push({ email, tier, joinedAt: new Date().toISOString(), points: 0 });
                     localStorage.setItem(STORAGE_KEYS.LOYALTY, JSON.stringify(members));
-                    showToast('Bienvenido al Círculo Anthros', 'success');
+                    showToast(serverCreated ? 'Bienvenido al Círculo Anthros' : 'Bienvenido al Círculo Anthros (guardado localmente)', 'success');
                 }
                 if (emailInput) emailInput.value = '';
             } catch (error) {
@@ -764,7 +692,7 @@
             } catch (e) { console.warn(e); return false; }
         }
 
-        function saveOrderToHistory() {
+        function saveOrderToHistory(checkoutData = {}) {
             if (!soportaStorage()) return null;
             try {
                 const data = localStorage.getItem(STORAGE_KEYS.ORDER_HISTORY);
@@ -775,7 +703,9 @@
                     items: JSON.parse(JSON.stringify(cart)),
                     appliedPromo,
                     desglose: calcularDesglosePedidoCompleto(),
-                    total: calcularDesglosePedidoCompleto().total
+                    total: calcularDesglosePedidoCompleto().total,
+                    customer: checkoutData.customer || null,
+                    payment: checkoutData.payment || null
                 };
                 orderHistory.unshift(order);
                 localStorage.setItem(STORAGE_KEYS.ORDER_HISTORY, JSON.stringify(orderHistory));
@@ -1243,6 +1173,8 @@
             const btn = document.getElementById('themeToggle');
             const isDark = root.classList.toggle('theme-dark');
             if (btn) btn.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
+            const mobileBtn = document.getElementById('mobileThemeToggle');
+            if (mobileBtn) mobileBtn.textContent = isDark ? 'Tema claro' : 'Tema oscuro';
             userPreferences.theme = isDark ? 'dark' : 'warm';
             saveUserPrefs();
             showToast(isDark ? ' Tema oscuro activado' : ' Tema cálido activado', 'info');
@@ -1811,11 +1743,11 @@
 
         /* 12) FAVORITOS SPA CONTADOR */
         function updateFavoritesCount() {
-            const badge = document.getElementById('favoritesCount');
-            if (!badge) return;
             const n = favorites.length;
-            badge.style.display = n > 0 ? 'inline-flex' : 'none';
-            badge.textContent = String(n);
+            document.querySelectorAll('.favorites-count').forEach(badge => {
+                badge.style.display = n > 0 ? 'inline-flex' : 'none';
+                badge.textContent = String(n);
+            });
         }
 
         /* 13) FAVORITOS SPA RENDER */
@@ -1993,6 +1925,33 @@
             `;
         }
 
+        function refreshCartViews() {
+            updateCart();
+            if (document.getElementById('fullCartItems')) renderFullCartPage();
+        }
+
+        function removeFromCart(index) {
+            const itemIndex = Number(index);
+            if (!Number.isInteger(itemIndex) || !cart[itemIndex]) return;
+            cart.splice(itemIndex, 1);
+            cart = normalizeCart(cart);
+            saveCart();
+            refreshCartViews();
+            showToast('Producto eliminado', 'info');
+        }
+
+        function changeQty(index, delta) {
+            const itemIndex = Number(index);
+            const amount = Number(delta);
+            const item = cart[itemIndex];
+            if (!Number.isInteger(itemIndex) || !item || !Number.isFinite(amount) || amount === 0) return;
+            item.qty = Math.min(CART_LIMITS.MAX_QTY_PER_ITEM, Math.max(0, item.qty + amount));
+            if (item.qty === 0) cart.splice(itemIndex, 1);
+            cart = normalizeCart(cart);
+            saveCart();
+            refreshCartViews();
+        }
+
         /* 16) ADD TO CART CON TALLA SELECCIONADA */
         function addToCart(product) {
             const card = typeof event !== 'undefined' && event?.target?.closest ? event.target.closest('.product-card') : null;
@@ -2014,7 +1973,8 @@
             else if (calcularCantidadCarrito() + payload.qty <= CART_LIMITS.MAX_TOTAL_ITEMS) cart.push(payload);
             else return showToast('El carrito alcanzó su límite de unidades', 'error');
             cart = normalizeCart(cart);
-            updateCart(); saveCart();
+            saveCart();
+            refreshCartViews();
             showToast(`${product.name} (${selectedSize}) añadido al carrito`, 'success');
         }
 
@@ -2027,11 +1987,11 @@
             const checkoutBtn = document.getElementById('checkoutBtn');
             if (!itemsEl || !summaryEl || !countEl) return;
             const totalQty = cart.reduce((s, i) => s + i.qty, 0);
-            if (countEl) {
-                countEl.textContent = totalQty;
-                countEl.classList.remove('pop'); void countEl.offsetWidth;
-                if (totalQty > 0) countEl.classList.add('pop');
-            }
+            document.querySelectorAll('.cart-count, #navCartCount').forEach(badge => {
+                badge.textContent = totalQty;
+                badge.classList.remove('pop'); void badge.offsetWidth;
+                if (totalQty > 0) badge.classList.add('pop');
+            });
             try { updateFavoritesCount(); } catch(e) {}
 
             if (cart.length === 0) {
@@ -2194,6 +2154,8 @@
                 document.documentElement.classList.add('theme-dark');
                 const btn = document.getElementById('themeToggle');
                 if (btn) btn.textContent = '';
+                const mobileBtn = document.getElementById('mobileThemeToggle');
+                if (mobileBtn) mobileBtn.textContent = 'Tema claro';
             }
             updateFavoritesCount();
             initTestimonialsCarousel();
